@@ -6,7 +6,6 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
-import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.physics.box2d.World;
 
 abstract public class PhysicsObject extends GeometricObject implements Physical {
@@ -16,27 +15,31 @@ abstract public class PhysicsObject extends GeometricObject implements Physical 
 	public PhysicsObject(Vector2 position, Vector2 dimension, World world) {
 		super(position, dimension);
 
-		BodyDef boxBodyDef = new BodyDef();
-		boxBodyDef.type = BodyType.DynamicBody;
-		boxBodyDef.position.x = position.x;
-		boxBodyDef.position.y = position.y;
-		body = world.createBody(boxBodyDef);
-
-		Shape shape = createShape();
-
-		body.createFixture(shape, 1);
-
-		shape.dispose();
-
 		this.world = world;
 	}
 
 	@Override
-	public Shape createShape() {
+	public void createFixtures(Body body) {
 		PolygonShape boxPoly = new PolygonShape();
 		boxPoly.setAsBox(dimension.x / 2, dimension.y / 2);
 
-		return boxPoly;
+		body.createFixture(boxPoly, 1);
+
+		boxPoly.dispose();
+
+	}
+
+	@Override
+	public Body createBody() {
+		BodyDef boxBodyDef = new BodyDef();
+		boxBodyDef.type = BodyType.DynamicBody;
+		boxBodyDef.position.x = position.x;
+		boxBodyDef.position.y = position.y;
+		Body body = world.createBody(boxBodyDef);
+
+		createFixtures(body);
+
+		return body;
 	}
 
 	@Override
