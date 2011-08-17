@@ -14,15 +14,14 @@ import daniel.weck.TextureConverter;
 public class TextureObject {
 	protected String assetPath;
 	protected TextureRegion textureRegion;
-	protected Array<Vector2> outline;
 	protected Array<Array<Vector2>> polygons;
 
 	public TextureObject(String assetPath) {
 		final Pixmap pixmap = new Pixmap(Gdx.files.internal(assetPath));
 
-		textureRegion = new TextureRegion(new Texture(Gdx.files.internal(assetPath)));
+		textureRegion = new TextureRegion(new Texture(pixmap));
 
-		outline = createOutline(pixmap);
+		Array<Vector2> outline = createOutline(pixmap);
 
 		polygons = createPolygons(outline);
 
