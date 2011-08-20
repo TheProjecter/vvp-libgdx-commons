@@ -1,9 +1,11 @@
 package de.julianfeja.games.libgdx.graphics;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Mesh;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.VertexAttribute;
+import com.badlogic.gdx.graphics.VertexAttributes.Usage;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.utils.Array;
@@ -13,22 +15,25 @@ import daniel.weck.TextureConverter;
 
 public class TextureObject {
 	protected String assetPath;
-	protected TextureRegion textureRegion;
+	protected Texture textureRegion;
 	protected Array<Array<Vector2>> polygons;
+	protected Mesh mesh;
 
 	public TextureObject(String assetPath) {
 		final Pixmap pixmap = new Pixmap(Gdx.files.internal(assetPath));
 
-		textureRegion = new TextureRegion(new Texture(pixmap));
+		textureRegion = new Texture(pixmap);
 
 		Array<Vector2> outline = createOutline(pixmap);
 
 		polygons = createPolygons(outline);
 
+		mesh = create_TextureMesh(outline);
+
 		pixmap.dispose();
 	}
 
-	public TextureRegion getTextureRegion() {
+	public Texture getTextureRegion() {
 		return textureRegion;
 	}
 
@@ -38,6 +43,10 @@ public class TextureObject {
 
 	public Array<Array<Vector2>> getPolygons() {
 		return polygons;
+	}
+	
+	public Mesh getMesh(){
+		return mesh;
 	}
 
 	protected Array<Vector2> createOutline(Pixmap pixmap) {
@@ -81,7 +90,7 @@ public class TextureObject {
 	}
 
 	public Array<PolygonShape> createPolygonShapes(Vector2 dimension) {
-		Vector2 bodySize = new Vector2(dimension.x / textureRegion.getRegionWidth(), dimension.y / textureRegion.getRegionHeight());
+		Vector2 bodySize = new Vector2(dimension.x / textureRegion.getWidth(), dimension.y / textureRegion.getHeight());
 
 		Array<PolygonShape> polygonShapes;
 
@@ -113,6 +122,54 @@ public class TextureObject {
 		}
 
 		return polygonShapes;
+	}
+
+	Mesh create_TextureMesh(Array<Vector2> outline) {
+		float ratio = 1;// SPRITES_SCALE_FACTOR / PIXEL_TO_WORLD_RATIO;
+
+		Mesh mesh = new Mesh(true, outline.size, outline.size, new VertexAttribute(Usage.Position, 3, "a_position"),
+		// new VertexAttribute(Usage.ColorPacked, 4, "a_color"),
+				new VertexAttribute(Usage.TextureCoordinates, 2, "a_texCoords"));
+
+		int stride = 5;
+		float[] vertices = new float[outline.size * stride];
+		short[] indices = new short[outline.size];
+
+		// float color = Color.WHITE.toFloatBits();
+
+		int j = -1;
+		int offset = -1;
+		for (int i = 0; i < outline.size; i++) {
+			Vector2 vect = outline.get(i);
+			j = i * stride;
+			offset = -1;
+			++offset;
+			vertices[j + offset] = vect.x;
+			++offset;
+			vertices[j + offset] = vect.y;
+			++offset;
+			vertices[j + offset] = 0;
+			//
+			// ++offset;
+			// vertices[j + offset] = color; // Color.toFloatBits(0, 255, 0,
+			// 255);
+			//
+			float u = (vect.x / ratio + getTextureRegion().getWidth() / 2) / textureRegion.getWidth();
+			float v = (getTextureRegion().getHeight() / 2 - vect.y / ratio) / textureRegion.getHeight();
+
+			++offset;
+			vertices[j + offset] = u; // u
+			++offset;
+			vertices[j + offset] = v; // v
+			//
+			indices[i] = (short) i;
+		}
+
+		// mesh.render(GL10.GL_TRIANGLE_FAN)
+		mesh.setVertices(vertices);
+		mesh.setIndices(indices);
+
+		return mesh;
 	}
 
 }
