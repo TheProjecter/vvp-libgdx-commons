@@ -61,40 +61,40 @@ public class OrthoCamera extends OrthographicCamera {
 			return false;
 		}
 
-		if (amount > 0) {
-			if (position.x - viewportWidth * newZoom / 2 < borders.x) {
-				if (viewportWidth * newZoom < borders.width) {
-					position.x = borders.x + viewportWidth * newZoom / 2;
-				} else {
-					return false;
-				}
-			}
-
-			if (position.x + viewportWidth * newZoom / 2 > borders.x + borders.width) {
-				if (viewportWidth * newZoom < borders.width) {
-					position.x = borders.x + borders.width - viewportWidth * newZoom / 2;
-				} else {
-					return false;
-				}
-			}
-
-			if (position.y - viewportHeight * newZoom / 2 < borders.y) {
-				if (viewportHeight * newZoom < borders.height) {
-					position.y = borders.y + viewportHeight * newZoom / 2;
-				} else {
-					return false;
-				}
-			}
-
-			if (position.y + viewportHeight * newZoom / 2 > borders.y + borders.height) {
-				if (viewportHeight * newZoom < borders.height) {
-					position.y = borders.y + borders.height - viewportHeight * newZoom / 2;
-				} else {
-					return false;
-				}
-			}
-
-		}
+//		if (amount > 0) {
+//			if (position.x - viewportWidth * newZoom / 2 < borders.x) {
+//				if (viewportWidth * newZoom < borders.width) {
+//					position.x = borders.x + viewportWidth * newZoom / 2;
+//				} else {
+//					return false;
+//				}
+//			}
+//
+//			if (position.x + viewportWidth * newZoom / 2 > borders.x + borders.width) {
+//				if (viewportWidth * newZoom < borders.width) {
+//					position.x = borders.x + borders.width - viewportWidth * newZoom / 2;
+//				} else {
+//					return false;
+//				}
+//			}
+//
+//			if (position.y - viewportHeight * newZoom / 2 < borders.y) {
+//				if (viewportHeight * newZoom < borders.height) {
+//					position.y = borders.y + viewportHeight * newZoom / 2;
+//				} else {
+//					return false;
+//				}
+//			}
+//
+//			if (position.y + viewportHeight * newZoom / 2 > borders.y + borders.height) {
+//				if (viewportHeight * newZoom < borders.height) {
+//					position.y = borders.y + borders.height - viewportHeight * newZoom / 2;
+//				} else {
+//					return false;
+//				}
+//			}
+//
+//		}
 
 		zoom = newZoom;
 

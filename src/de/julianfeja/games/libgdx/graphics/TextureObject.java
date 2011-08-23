@@ -15,14 +15,14 @@ import daniel.weck.TextureConverter;
 
 public class TextureObject {
 	protected String assetPath;
-	protected Texture textureRegion;
+	protected Texture texture;
 	protected Array<Array<Vector2>> polygons;
 	protected Mesh mesh;
 
 	public TextureObject(String assetPath) {
 		final Pixmap pixmap = new Pixmap(Gdx.files.internal(assetPath));
 
-		textureRegion = new Texture(pixmap);
+		texture = new Texture(pixmap);
 
 		Array<Vector2> outline = createOutline(pixmap);
 
@@ -33,8 +33,8 @@ public class TextureObject {
 		pixmap.dispose();
 	}
 
-	public Texture getTextureRegion() {
-		return textureRegion;
+	public Texture getTexture() {
+		return texture;
 	}
 
 	public String getAssetPath() {
@@ -44,8 +44,8 @@ public class TextureObject {
 	public Array<Array<Vector2>> getPolygons() {
 		return polygons;
 	}
-	
-	public Mesh getMesh(){
+
+	public Mesh getMesh() {
 		return mesh;
 	}
 
@@ -76,12 +76,15 @@ public class TextureObject {
 
 	public Array<Array<Vector2>> createPolygons(Array<Vector2> outline) {
 
-		Array<Array<Vector2>> polygons = BayazitDecomposer.ConvexPartition(outline);
+		Array<Array<Vector2>> polygons = BayazitDecomposer
+				.ConvexPartition(outline);
 
 		for (Array<Vector2> polygon : polygons) {
 			if (BayazitDecomposer.IsCounterClockWise(polygon)) {
-				Gdx.app.log("DEBUG", "Counter Clockwise body polygon vertices (after BayazitDecomposer.ConvexPartition), reversing... ["
-						+ assetPath + "] ");
+				Gdx.app.log(
+						"DEBUG",
+						"Counter Clockwise body polygon vertices (after BayazitDecomposer.ConvexPartition), reversing... ["
+								+ assetPath + "] ");
 				polygon.reverse();
 			}
 		}
@@ -90,7 +93,8 @@ public class TextureObject {
 	}
 
 	public Array<PolygonShape> createPolygonShapes(Vector2 dimension) {
-		Vector2 bodySize = new Vector2(dimension.x / textureRegion.getWidth(), dimension.y / textureRegion.getHeight());
+		Vector2 bodySize = new Vector2(dimension.x / texture.getWidth(),
+				dimension.y / texture.getHeight());
 
 		Array<PolygonShape> polygonShapes;
 
@@ -100,7 +104,8 @@ public class TextureObject {
 			// ClockWise requirement should have been dealt with at
 			// create_sprite() stage !
 			if (BayazitDecomposer.IsCounterClockWise(vertices_original)) {
-				Gdx.app.log(this.getClass().getName(), "Counter Clockwise body polygon vertices (ORIGINAL) for Box2D ?! WTF ?");
+				Gdx.app.log(this.getClass().getName(),
+						"Counter Clockwise body polygon vertices (ORIGINAL) for Box2D ?! WTF ?");
 			}
 			Vector2[] vertices_adjusted = new Vector2[vertices_original.size];
 			for (int t = 0; t < vertices_original.size; t++) {
@@ -112,7 +117,8 @@ public class TextureObject {
 				vertices_adjusted[t] = v;
 			}
 			if (!BayazitDecomposer.IsCounterClockWise(vertices_adjusted)) {
-				Gdx.app.log(this.getClass().getName(), "Clockwise body polygon vertices (ADJUSTED) for Box2D ?! WTF");
+				Gdx.app.log(this.getClass().getName(),
+						"Clockwise body polygon vertices (ADJUSTED) for Box2D ?! WTF");
 			}
 
 			PolygonShape polygonShape = new PolygonShape();
@@ -125,17 +131,9 @@ public class TextureObject {
 	}
 
 	Mesh create_TextureMesh(Array<Vector2> outline) {
-		float ratio = 1;// SPRITES_SCALE_FACTOR / PIXEL_TO_WORLD_RATIO;
-
-		Mesh mesh = new Mesh(true, outline.size, outline.size, new VertexAttribute(Usage.Position, 3, "a_position"),
-		// new VertexAttribute(Usage.ColorPacked, 4, "a_color"),
-				new VertexAttribute(Usage.TextureCoordinates, 2, "a_texCoords"));
-
 		int stride = 5;
 		float[] vertices = new float[outline.size * stride];
 		short[] indices = new short[outline.size];
-
-		// float color = Color.WHITE.toFloatBits();
 
 		int j = -1;
 		int offset = -1;
@@ -154,18 +152,25 @@ public class TextureObject {
 			// vertices[j + offset] = color; // Color.toFloatBits(0, 255, 0,
 			// 255);
 			//
-			float u = (vect.x / ratio + getTextureRegion().getWidth() / 2) / textureRegion.getWidth();
-			float v = (getTextureRegion().getHeight() / 2 - vect.y / ratio) / textureRegion.getHeight();
+			float u = (vect.x) / texture.getWidth();
+			float v = (vect.y) / texture.getHeight();// (getTextureRegion().getHeight()
+														// / 2 - vect.y /
+														// ratio) /
+														// textureRegion.getHeight();
 
 			++offset;
 			vertices[j + offset] = u; // u
 			++offset;
 			vertices[j + offset] = v; // v
-			//
+
 			indices[i] = (short) i;
 		}
 
 		// mesh.render(GL10.GL_TRIANGLE_FAN)
+		Mesh mesh = new Mesh(true, vertices.length, indices.length,
+				new VertexAttribute(Usage.Position, 3, "a_position"),
+				new VertexAttribute(Usage.TextureCoordinates, 2, "a_texCoords"));
+
 		mesh.setVertices(vertices);
 		mesh.setIndices(indices);
 

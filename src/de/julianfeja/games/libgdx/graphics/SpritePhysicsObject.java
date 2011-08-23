@@ -12,7 +12,8 @@ import com.badlogic.gdx.physics.box2d.World;
 public class SpritePhysicsObject extends PhysicsObject {
 	protected TextureObject textureObject;
 
-	public SpritePhysicsObject(Vector2 position, Vector2 dimension, TextureObject textureObject, World world) {
+	public SpritePhysicsObject(Vector2 position, Vector2 dimension,
+			TextureObject textureObject, World world) {
 		super(position, dimension, world);
 
 		this.textureObject = textureObject;
@@ -23,7 +24,8 @@ public class SpritePhysicsObject extends PhysicsObject {
 	@Override
 	public void createFixtures(Body body) {
 
-		for (PolygonShape bodyPoly : textureObject.createPolygonShapes(dimension)) {
+		for (PolygonShape bodyPoly : textureObject
+				.createPolygonShapes(dimension)) {
 			FixtureDef fixtureDef = new FixtureDef();
 			fixtureDef.shape = bodyPoly;
 			// fixtureDef.filter.groupIndex = 1; // 0 => no collision
@@ -45,20 +47,14 @@ public class SpritePhysicsObject extends PhysicsObject {
 	public void paint(SpriteBatch batch) {
 		super.paint(batch);
 		float angle = MathUtils.radiansToDegrees * body.getAngle();
-		// batch.draw(textureObject.getTextureRegion(), position.x, position.y -
-		// dimension.y, 0f, dimension.y, dimension.x, dimension.y, 1f,
-		// 1f, angle, 0, 0, 0, 0, false, false);
+		batch.draw(textureObject.getTexture(), position.x, position.y
+				- dimension.y, 0f, dimension.y, dimension.x, dimension.y, 1f,
+				1f, angle, 0, 0, 0, 0, false, false);
 
-		batch.draw(new TextureRegion(textureObject.getTextureRegion()), position.x, position.y - dimension.y, 0, dimension.y, dimension.x,
+		batch.draw(new TextureRegion(textureObject.getTexture()), position.x,
+				position.y - dimension.y, 0, dimension.y, dimension.x,
 				dimension.y, 1.0f, 1.0f, angle);
 
-		// Gdx.graphics.getGL10().glClear(GL10.GL_COLOR_BUFFER_BIT);
-		// Gdx.graphics.getGL10().glViewport(0, 0, Gdx.graphics.getWidth(),
-		// Gdx.graphics.getHeight());
-		// Gdx.graphics.getGL10().glEnable(GL10.GL_TEXTURE_2D);
-		//
-		// texture.bind();
-		// mesh.render(GL10.GL_TRIANGLES, 3, 3);
 	}
 
 }
