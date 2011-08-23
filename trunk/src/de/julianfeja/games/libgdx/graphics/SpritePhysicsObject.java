@@ -57,4 +57,11 @@ public class SpritePhysicsObject extends PhysicsObject {
 
 	}
 
+	@Override
+	public void dispose() {
+		super.dispose();
+
+		textureObject.dispose();
+	}
+
 }

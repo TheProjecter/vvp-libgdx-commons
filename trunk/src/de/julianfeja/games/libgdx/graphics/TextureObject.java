@@ -33,6 +33,15 @@ public class TextureObject {
 		pixmap.dispose();
 	}
 
+	public TextureObject(TextureObject textureObject, Array<Vector2> outline) {
+		assetPath = textureObject.getAssetPath();
+		texture = textureObject.getTexture();
+
+		polygons = createPolygons(outline);
+
+		mesh = create_TextureMesh(outline);
+	}
+
 	public Texture getTexture() {
 		return texture;
 	}
@@ -101,8 +110,6 @@ public class TextureObject {
 		polygonShapes = new Array<PolygonShape>(polygons.size);
 		for (int j = 0; j < polygons.size; j++) {
 			Array<Vector2> vertices_original = polygons.get(j);
-			// ClockWise requirement should have been dealt with at
-			// create_sprite() stage !
 			if (BayazitDecomposer.IsCounterClockWise(vertices_original)) {
 				Gdx.app.log(this.getClass().getName(),
 						"Counter Clockwise body polygon vertices (ORIGINAL) for Box2D ?! WTF ?");
@@ -147,16 +154,9 @@ public class TextureObject {
 			vertices[j + offset] = vect.y;
 			++offset;
 			vertices[j + offset] = 0;
-			//
-			// ++offset;
-			// vertices[j + offset] = color; // Color.toFloatBits(0, 255, 0,
-			// 255);
-			//
+
 			float u = (vect.x) / texture.getWidth();
-			float v = (vect.y) / texture.getHeight();// (getTextureRegion().getHeight()
-														// / 2 - vect.y /
-														// ratio) /
-														// textureRegion.getHeight();
+			float v = (vect.y) / texture.getHeight();
 
 			++offset;
 			vertices[j + offset] = u; // u
@@ -166,7 +166,6 @@ public class TextureObject {
 			indices[i] = (short) i;
 		}
 
-		// mesh.render(GL10.GL_TRIANGLE_FAN)
 		Mesh mesh = new Mesh(true, vertices.length, indices.length,
 				new VertexAttribute(Usage.Position, 3, "a_position"),
 				new VertexAttribute(Usage.TextureCoordinates, 2, "a_texCoords"));
@@ -175,6 +174,14 @@ public class TextureObject {
 		mesh.setIndices(indices);
 
 		return mesh;
+	}
+
+	public void dispose() {
+		// protected String assetPath;
+		// protected Texture texture;
+		// protected Array<Array<Vector2>> polygons;
+
+		mesh.dispose();
 	}
 
 }
