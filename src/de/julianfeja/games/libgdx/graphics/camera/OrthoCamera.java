@@ -1,4 +1,4 @@
-package de.julianfeja.games.libgdx.graphics;
+package de.julianfeja.games.libgdx.graphics.camera;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Matrix4;
@@ -40,7 +40,9 @@ public class OrthoCamera extends OrthographicCamera {
 		// TODO Auto-generated method stub
 		super.translate(x, 0, z);
 
-		if (position.x - viewportWidth * zoom / 2 < borders.x || position.x + viewportWidth * zoom / 2 > borders.x + borders.width) {
+		if (position.x - viewportWidth * zoom / 2 < borders.x
+				|| position.x + viewportWidth * zoom / 2 > borders.x
+						+ borders.width) {
 			position.x = lastValidPosition.x;
 		} else {
 			lastValidPosition.x = position.x;
@@ -61,40 +63,43 @@ public class OrthoCamera extends OrthographicCamera {
 			return false;
 		}
 
-//		if (amount > 0) {
-//			if (position.x - viewportWidth * newZoom / 2 < borders.x) {
-//				if (viewportWidth * newZoom < borders.width) {
-//					position.x = borders.x + viewportWidth * newZoom / 2;
-//				} else {
-//					return false;
-//				}
-//			}
-//
-//			if (position.x + viewportWidth * newZoom / 2 > borders.x + borders.width) {
-//				if (viewportWidth * newZoom < borders.width) {
-//					position.x = borders.x + borders.width - viewportWidth * newZoom / 2;
-//				} else {
-//					return false;
-//				}
-//			}
-//
-//			if (position.y - viewportHeight * newZoom / 2 < borders.y) {
-//				if (viewportHeight * newZoom < borders.height) {
-//					position.y = borders.y + viewportHeight * newZoom / 2;
-//				} else {
-//					return false;
-//				}
-//			}
-//
-//			if (position.y + viewportHeight * newZoom / 2 > borders.y + borders.height) {
-//				if (viewportHeight * newZoom < borders.height) {
-//					position.y = borders.y + borders.height - viewportHeight * newZoom / 2;
-//				} else {
-//					return false;
-//				}
-//			}
-//
-//		}
+		// if (amount > 0) {
+		// if (position.x - viewportWidth * newZoom / 2 < borders.x) {
+		// if (viewportWidth * newZoom < borders.width) {
+		// position.x = borders.x + viewportWidth * newZoom / 2;
+		// } else {
+		// return false;
+		// }
+		// }
+		//
+		// if (position.x + viewportWidth * newZoom / 2 > borders.x +
+		// borders.width) {
+		// if (viewportWidth * newZoom < borders.width) {
+		// position.x = borders.x + borders.width - viewportWidth * newZoom / 2;
+		// } else {
+		// return false;
+		// }
+		// }
+		//
+		// if (position.y - viewportHeight * newZoom / 2 < borders.y) {
+		// if (viewportHeight * newZoom < borders.height) {
+		// position.y = borders.y + viewportHeight * newZoom / 2;
+		// } else {
+		// return false;
+		// }
+		// }
+		//
+		// if (position.y + viewportHeight * newZoom / 2 > borders.y +
+		// borders.height) {
+		// if (viewportHeight * newZoom < borders.height) {
+		// position.y = borders.y + borders.height - viewportHeight * newZoom /
+		// 2;
+		// } else {
+		// return false;
+		// }
+		// }
+		//
+		// }
 
 		zoom = newZoom;
 

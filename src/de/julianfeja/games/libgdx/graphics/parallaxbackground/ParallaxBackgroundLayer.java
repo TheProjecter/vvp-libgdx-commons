@@ -1,4 +1,4 @@
-package de.julianfeja.games.libgdx.graphics;
+package de.julianfeja.games.libgdx.graphics.parallaxbackground;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
