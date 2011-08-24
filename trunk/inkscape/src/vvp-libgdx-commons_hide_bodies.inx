@@ -1,0 +1,15 @@
+<inkscape-extension>
+  <_name>Show all Bodies</_name>
+  <id>de.julianfeja.andengine.svgbody.showbodies</id>
+  <dependency type="executable" location="extensions">andengine_show_all_bodies.py</dependency>
+  <dependency type="executable" location="extensions">inkex.py</dependency>
+  <effect>
+    <object-type>all</object-type>
+    <effects-menu>
+       <submenu _name="Andengine"/>
+    </effects-menu>
+  </effect>
+  <script>
+    <command reldir="extensions" interpreter="python">andengine_show_all_bodies.py</command>
+  </script>
+</inkscape-extension>
