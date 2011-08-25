@@ -6,9 +6,9 @@
   <dependency type="executable" location="extensions">vvp_libgdx_commons_inkscape.py</dependency>
   <dependency type="executable" location="extensions">inkex.py</dependency>
   <output>
-    <extension>.png</extension>
-    <mimetype>application/body</mimetype>
-    <_filetypename>PNG (*.png)</_filetypename>
+    <extension>.xml</extension>
+    <mimetype>application/libgdxbody</mimetype>
+    <_filetypename>VVP Libgdx Multitexture (*.png, *.xml)</_filetypename>
     <_filetypetooltip>Exports HD and SD PNG and a Bodydefinition</_filetypetooltip>
   </output>
   <script>
