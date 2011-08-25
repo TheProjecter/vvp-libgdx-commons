@@ -2,10 +2,9 @@
 
 
 # We will use the inkex module with the predefined Effect base class.
-import inkex, cubicsuperpath, simplepath, cspsubdiv, sys, string
-import flatten
+import inkex
 # The simplestyle module provides functions for style parsing.
-from simplestyle import *
+from vvp_libgdx_commons_inkscape import flattenPath
 
 class ExportBody(inkex.Effect):
 	"""
@@ -30,7 +29,7 @@ class ExportBody(inkex.Effect):
 	def effect(self):
 		for id, node in self.selected.iteritems():
 			if node.tag == inkex.addNS('path','svg'):
-				flattenPath(node, flat)
+				flattenPath(node, self.options.flat)
 			
 				node.set('isBody', '1')
 				if self.options.hide:
