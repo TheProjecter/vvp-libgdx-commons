@@ -5,7 +5,7 @@
 import inkex
 from vvp_libgdx_commons_inkscape import hideAllBodies
 
-class ShowAllBodies(inkex.Effect):
+class HideAllBodies(inkex.Effect):
 	"""
 	Example Inkscape effect extension.
 	Creates a new layer with a "Hello World!" text centered in the middle of the document.
@@ -24,5 +24,5 @@ class ShowAllBodies(inkex.Effect):
 # Create effect instance and apply it.
 
 if __name__ == '__main__':
-	effect = ShowAllBodies()
+	effect = HideAllBodies()
 	effect.affect()

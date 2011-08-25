@@ -13,10 +13,15 @@ def showAllBodies(document):
 def setOpacityToAll(document, opacity):
 	for node in document.xpath('//svg:path[@isBody=\'1\']', namespaces=inkex.NSS):
 		if node.get('isBody') == '1':
-			style = parseStyle(node.get('style'))
-			style['opacity'] = str(opacity)
-			node.set('style', formatStyle(style))
+			setStyle(node, 'opacity', str(opacity))
 			
+def setStyle(node, key, value):
+	style = parseStyle(node.get('style'))
+	style[str(key)] = str(value)
+	node.set('style', formatStyle(style))
+	
+def getStyle(node, key):
+	return parseStyle(node.get('style'))[str(key)]
 			
 def flattenPath(node, flat):
 	if node.tag == inkex.addNS('path','svg'):
