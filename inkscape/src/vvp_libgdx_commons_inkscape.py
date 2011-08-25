@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 
 import inkex, cubicsuperpath, cspsubdiv, simplepath
-from simplestyle import parseStyle
-from jessyInk_export import setStyle
+from simplestyle import parseStyle, formatStyle
 
 
 def hideAllBodies(document):
@@ -15,6 +14,12 @@ def setOpacityToAll(document, opacity):
 	for node in document.xpath('//svg:path[@isBody=\'1\']', namespaces=inkex.NSS):
 		if node.get('isBody') == '1':
 			setStyle(node, 'opacity', str(opacity))
+			
+def setStyle(node, key, value):
+	style = parseStyle(node.get('style'))
+	style[str(key)] = str(value)
+	node.set('style', formatStyle(style))
+	
 	
 def getStyle(node, key):
 	return parseStyle(node.get('style'))[str(key)]
