@@ -28,10 +28,6 @@ class ExportBody(inkex.Effect):
             help="hide the path")
 
 	def effect(self):
-		widthH = float(str(self.document.xpath('/svg:svg/@width', namespaces=inkex.NSS)[0]))/2
-		heightH = float(str(self.document.xpath('/svg:svg/@height', namespaces=inkex.NSS)[0]))/2
-		
-
 		for id, node in self.selected.iteritems():
 			if node.tag == inkex.addNS('path','svg'):
 				d = node.get('d')
@@ -46,14 +42,16 @@ class ExportBody(inkex.Effect):
 						if first:
 							cmd = 'M'
 						first = False
-						pnts += str((csp[1][0]-widthH)/widthH) + ',' + str((csp[1][1]-heightH)/heightH) + ','
+						pnts += str(csp[1][0]) + ',' + str(csp[1][1]) + ' '
 						np.append([cmd,[csp[1][0],csp[1][1]]])
-						node.set('d',simplepath.formatPath(np))
-				
+						
+				node.set('d',simplepath.formatPath(np))
 				node.set('body_vertices', pnts)
 				node.set('isBody', '1')
 				if self.options.hide:
-					node.set('opacity', '0')
+					node.set('style', 'fill:#d4ff2a;fill-opacity:0.06787331;stroke:#c4f700;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:6, 6;stroke-dashoffset:0')
+				else:
+					node.set('style', 'fill:#ff522a;fill-opacity:0.06787331;stroke:#f72f00;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:6, 6;stroke-dashoffset:0')
 				#sys.stderr.write(pnts)
 		
 		
