@@ -1,4 +1,5 @@
-<inkscape-extension>
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
   <_name>unmark bodies</_name>
   <id>de.julianfeja.games.libgdx.inkscape.extensions.unmarkbodies</id>
   <dependency type="executable" location="extensions">vvp_libgdx_commons_unmark_bodies.py</dependency>

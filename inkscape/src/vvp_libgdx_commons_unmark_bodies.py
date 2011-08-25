@@ -3,7 +3,7 @@
 
 # We will use the inkex module with the predefined Effect base class.
 import inkex
-from jessyInk_export import setStyle
+from vvp_libgdx_commons_inkscape import setStyle
 
 class UnmarkBodies(inkex.Effect):
 	"""
