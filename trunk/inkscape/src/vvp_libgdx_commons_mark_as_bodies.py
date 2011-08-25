@@ -6,7 +6,7 @@ import inkex
 # The simplestyle module provides functions for style parsing.
 from vvp_libgdx_commons_inkscape import flattenPath
 
-class ExportBody(inkex.Effect):
+class MarkBodies(inkex.Effect):
 	"""
 	Example Inkscape effect extension.
 	Creates a new layer with a "Hello World!" text centered in the middle of the document.
@@ -46,5 +46,5 @@ class ExportBody(inkex.Effect):
 	
 
 if __name__ == '__main__':
-	effect = ExportBody()
+	effect = MarkBodies()
 	effect.affect()
