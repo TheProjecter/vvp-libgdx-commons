@@ -1,0 +1,17 @@
+<inkscape-extension>
+  <_name>mark bodies</_name>
+  <id>de.julianfeja.games.libgdx.inkscape.extensions.markbodies</id>
+  <dependency type="executable" location="extensions">vvp-libgdx-commons_mark_as_bodies.py</dependency>
+  <dependency type="executable" location="extensions">inkex.py</dependency>
+  <param name="flatness" type="float" min="0.0" max="1000.0" _gui-text="Flatness">10.0</param>
+  <param name="hide" type="boolean" _gui-text="Hide?">false</param>
+  <effect>
+    <object-type>all</object-type>
+    <effects-menu>
+       <submenu _name="vvp-LibGDX-Commons"/>
+    </effects-menu>
+  </effect>
+  <script>
+    <command reldir="extensions" interpreter="python">vvp-libgdx-commons_mark_as_bodies.py</command>
+  </script>
+</inkscape-extension>
