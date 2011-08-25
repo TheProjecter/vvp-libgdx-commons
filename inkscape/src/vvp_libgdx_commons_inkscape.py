@@ -1,8 +1,24 @@
 #!/usr/bin/env python
 
-def hideAll
+import inkex, cubicsuperpath, cspsubdiv, simplepath
+from simplestyle import parseStyle, formatStyle
 
-def flattenPath(nod, flat):
+
+def hideAllBodies(document):
+	setOpacityToAll(document, 0)
+			
+def showAllBodies(document):
+	setOpacityToAll(document, 1)
+			
+def setOpacityToAll(document, opacity):
+	for node in document.xpath('//svg:path[@isBody=\'1\']', namespaces=inkex.NSS):
+		if node.get('isBody') == '1':
+			style = parseStyle(node.get('style'))
+			style['opacity'] = str(opacity)
+			node.set('style', formatStyle(style))
+			
+			
+def flattenPath(node, flat):
 	if node.tag == inkex.addNS('path','svg'):
 		d = node.get('d')
 		p = cubicsuperpath.parsePath(d)

@@ -1,15 +1,16 @@
 <inkscape-extension>
   <_name>Show all Bodies</_name>
-  <id>de.julianfeja.andengine.svgbody.showbodies</id>
-  <dependency type="executable" location="extensions">andengine_show_all_bodies.py</dependency>
+  <id>de.julianfeja.games.libgdx.inkscape.extensions.showallbodies</id>
+  <dependency type="executable" location="extensions">vvp_libgdx_commons_show_bodies.py</dependency>
+  <dependency type="executable" location="extensions">vvp_libgdx_commons_inkscape.py</dependency>
   <dependency type="executable" location="extensions">inkex.py</dependency>
   <effect>
     <object-type>all</object-type>
     <effects-menu>
-       <submenu _name="Andengine"/>
+       <submenu _name="VVP-LibGDX-Commons"/>
     </effects-menu>
   </effect>
   <script>
-    <command reldir="extensions" interpreter="python">andengine_show_all_bodies.py</command>
+    <command reldir="extensions" interpreter="python"vvp_libgdx_commons_show_bodies.py</command>
   </script>
 </inkscape-extension>

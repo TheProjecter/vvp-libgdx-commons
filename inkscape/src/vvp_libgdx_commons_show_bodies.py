@@ -2,16 +2,12 @@
 
 
 # We will use the inkex module with the predefined Effect base class.
-import inkex, cubicsuperpath, simplepath, cspsubdiv, sys, string
-import flatten
-# The simplestyle module provides functions for style parsing.
-from simplestyle import *
+import inkex
+from vvp_libgdx_commons_inkscape import showAllBodies
+
 
 class ShowAllBodies(inkex.Effect):
-	"""
-	Example Inkscape effect extension.
-	Creates a new layer with a "Hello World!" text centered in the middle of the document.
-	"""
+
 	def __init__(self):
 
 		# Call the base class constructor.
@@ -19,9 +15,7 @@ class ShowAllBodies(inkex.Effect):
 
 
 	def effect(self):
-			
-		for node in self.document.xpath('//svg:path[@isBody=\'1\']', namespaces=inkex.NSS):
-			node.set('opacity', '1')
+		showAllBodies(self.document)
 		
 		
 
