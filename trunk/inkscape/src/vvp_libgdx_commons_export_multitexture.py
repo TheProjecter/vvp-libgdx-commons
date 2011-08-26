@@ -16,7 +16,7 @@ class ExportBody(inkex.Effect):
 
 
 	def effect(self):
-		print self.args
+		print self.svg_file
 # Create effect instance and apply it.
 
 if __name__ == '__main__':

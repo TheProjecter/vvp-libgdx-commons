@@ -10,6 +10,7 @@
     <mimetype>application/libgdxbody</mimetype>
     <_filetypename>VVP Libgdx Multitexture (*.png, *.xml)</_filetypename>
     <_filetypetooltip>Exports HD and SD PNG and a Bodydefinition</_filetypetooltip>
+    <dataloss>true</dataloss>
   </output>
   <script>
     <command reldir="extensions" interpreter="python">vvp_libgdx_commons_export_multitexture.py</command>
