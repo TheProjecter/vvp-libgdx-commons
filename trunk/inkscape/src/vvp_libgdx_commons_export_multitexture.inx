@@ -2,13 +2,14 @@
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
   <_name>VVP-LibGDX Body</_name>
   <id>de.julianfeja.games.libgdx.inkscape.extensions.bodyexport</id>
+  <dependency type="extension">org.inkscape.output.svg.inkscape</dependency>
   <dependency type="executable" location="extensions">vvp_libgdx_commons_export_multitexture.py</dependency>
   <dependency type="executable" location="extensions">vvp_libgdx_commons_inkscape.py</dependency>
   <dependency type="executable" location="extensions">inkex.py</dependency>
   <output>
-    <extension>.xml</extension>
-    <mimetype>application/libgdxbody</mimetype>
-    <_filetypename>VVP Libgdx Multitexture (*.png, *.xml)</_filetypename>
+    <extension>.zip</extension>
+    <mimetype>application/x-zip</mimetype>
+    <_filetypename>VVP Libgdx Multitexture (*.zip)</_filetypename>
     <_filetypetooltip>Exports HD and SD PNG and a Bodydefinition</_filetypetooltip>
     <dataloss>true</dataloss>
   </output>
