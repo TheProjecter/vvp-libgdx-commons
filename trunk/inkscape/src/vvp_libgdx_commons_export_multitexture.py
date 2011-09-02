@@ -4,7 +4,14 @@
 # We will use the inkex module with the predefined Effect base class.
 import inkex, tempfile, os, zipfile, sys, shutil
 
+from subprocess import Popen, PIPE
+
+
+
+
 class ExportBody(inkex.Effect):
+	textureFileName = "texture.png"
+	defFileName = "def.xml"
 	"""
 	Example Inkscape effect extension.
 	Creates a new layer with a "Hello World!" text centered in the middle of the document.
@@ -32,17 +39,37 @@ class ExportBody(inkex.Effect):
 		docname = docname.replace('.svgz', '')
 		# Create os temp dir
 		self.tmp_dir = tempfile.mkdtemp()
+		
+		tmpTexture = os.path.join(self.tmp_dir, self.textureFileName) 
 		# Create destination zip in same directory as the document
 		self.zip_file = os.path.join(self.tmp_dir, docname) + '.zip'
 		z = zipfile.ZipFile(self.zip_file, 'w')
 		
-		dst_file = os.path.join(self.tmp_dir, docname)
-		stream = open(dst_file,'w')
-		self.document.write(stream)
-		stream.close()
-		z.write(dst_file,docname.encode(self.encoding)+'.svg')
+		self.exportPng(tmpTexture)
+		
+		#dst_file = os.path.join(self.tmp_dir, docname)
+		#stream = open(dst_file,'w')
+		#self.document.write(stream)
+		#stream.close()
+		z.write(tmpTexture, self.textureFileName)
 
 		z.close()
+		
+	def exportPng(self, filename):
+		'''
+		Runs inkscape's command line interface and exports the image
+        slice from the 4 coordinates in s, and saves as the filename
+        given.
+        '''
+		svg_file = self.args[-1]
+		command = "inkscape -a %i:%i:%i:%i -e \"%s\" \"%s\" " % (0, 0, 0, 0, filename, svg_file)
+
+		p = Popen(command, shell=True, stdout=PIPE, stderr=PIPE)
+		return_code = p.wait()
+		f = p.stdout
+		err = p.stderr
+
+		f.close()
 		
 	def output(self):
 		'''
