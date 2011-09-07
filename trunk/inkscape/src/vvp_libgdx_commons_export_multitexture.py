@@ -2,16 +2,111 @@
 
 
 # We will use the inkex module with the predefined Effect base class.
-import inkex, tempfile, os, zipfile, sys, shutil
+import inkex, tempfile, os, zipfile, sys, shutil, re
+
+import xml.dom.minidom as dom
 
 from subprocess import Popen, PIPE
 
+class DefXml:
+	rootElement = dom.Element("vvp_libgdx_file")
+	
+	def toXml(self):
+		return self.rootElement.toprettyxml()
+	
+	def addBody(self, points):
+		bodyElement = dom.Element("body")
+		
+		for point in points:
+			pointElement = dom.Element("point")
+			
+			pointElement.setAttribute("x", str(point[0]))
+			pointElement.setAttribute("y", str(point[1]))
+			
+			bodyElement.appendChild(pointElement)
+			
+		self.rootElement.appendChild(bodyElement)
+	
 
+class SvgSize:
+	inchPerMm = 25.4
+	dpi = 90
+	pxPerPt = 1.25
+	
+	def __init__(self, width, height):
+		self.width = self.toPx(width)
+		self.height = self.toPx(height)
+			
+	def toPx(self, value):
+		reMm = re.compile(r"\d+([.]\d+)?mm")
+		rePt = re.compile(r"\d+([.]\d+)?pt")
+		
+		ret = 1
+		
+		match = reMm.match(value)
+		
+		if match != None and match.group() == value:
+			value = self.toDec(value)
+			
+			value = value / self.inchPerMm
+			ret = value * self.dpi
+		else:
+			match = rePt.match(value)
+			if match != None and match.group() == value:
+				value = self.toDec(value)
+			
+				ret = value * self.pxPerPt
+			else:
+				ret = value
+				
+		ret = int(ret)
+		
+		return ret
+	
+	def roundUpToPowerOfTwo(self):
+		x = 2
+		
+		while (True):
+			if x > self.width:
+				self.width = x
+				break			
+			
+			x = 2*x
+			
+		x = 2
+		
+		while (True):
+			if x > self.height:
+				self.height = x
+				break			
+			
+			x = 2*x
+
+
+	def toDec(self, value):
+		reDec = re.compile(r"\d+([.]\d+)?")
+		
+		ret = 1.0
+		
+		match = reDec.match(value)
+		if match != None:
+			ret = float(match.group())
+			
+		return ret
+	
+	def isValid(self):
+		if self.width > 20000 or self.height > 20000:
+			return False
+		else:
+			return True
 
 
 class ExportBody(inkex.Effect):
 	textureFileName = "texture.png"
 	defFileName = "def.xml"
+	errorFileName = "errors.txt"
+	errorStr = ""
+	
 	"""
 	Example Inkscape effect extension.
 	Creates a new layer with a "Hello World!" text centered in the middle of the document.
@@ -25,9 +120,16 @@ class ExportBody(inkex.Effect):
 			self.encoding = "cp437"
 		else:
 			self.encoding = "latin-1"
+			
 
 
 	def effect(self):
+		
+		#hideAllBodies(self.document)
+		
+		self.size = SvgSize(str(self.document.xpath('/svg:svg/@width', namespaces=inkex.NSS)[0]), str(self.document.xpath('/svg:svg/@height', namespaces=inkex.NSS)[0]))
+		self.size.roundUpToPowerOfTwo()
+		
 		docroot = self.document.getroot()
 		docname = docroot.get(inkex.addNS('docname',u'sodipodi'))
 		#inkex.errormsg(_('Locale: %s') % locale.getpreferredencoding())
@@ -45,13 +147,23 @@ class ExportBody(inkex.Effect):
 		self.zip_file = os.path.join(self.tmp_dir, docname) + '.zip'
 		z = zipfile.ZipFile(self.zip_file, 'w')
 		
-		self.exportPng(tmpTexture)
+		
 		
 		#dst_file = os.path.join(self.tmp_dir, docname)
 		#stream = open(dst_file,'w')
 		#self.document.write(stream)
 		#stream.close()
-		z.write(tmpTexture, self.textureFileName)
+		
+		if(self.size.isValid()):
+			self.exportPng(tmpTexture)
+			z.write(tmpTexture, self.textureFileName)
+		else:
+			self.logError("Size is invalid: " + str(self.size.width) + "/" + str(self.size.height))
+			
+		z.writestr(self.defFileName, self.exportPaths())
+		
+		if self.errorStr != "":
+			z.writestr(self.errorFileName, self.errorStr)
 
 		z.close()
 		
@@ -62,7 +174,7 @@ class ExportBody(inkex.Effect):
         given.
         '''
 		svg_file = self.args[-1]
-		command = "inkscape -a %i:%i:%i:%i -e \"%s\" \"%s\" " % (0, 0, 0, 0, filename, svg_file)
+		command = "inkscape -a %s:%s:%s:%s -e \"%s\" \"%s\" " % (0, 0, self.size.width, self.size.height, filename, svg_file)
 
 		p = Popen(command, shell=True, stdout=PIPE, stderr=PIPE)
 		return_code = p.wait()
@@ -70,6 +182,38 @@ class ExportBody(inkex.Effect):
 		err = p.stderr
 
 		f.close()
+		
+	def exportPaths(self):
+		rePoint = re.compile(r"\d+([.]\d+)?L\d+([.]\d+)?")
+		defXml = DefXml()
+		
+		for result in self.document.xpath('//svg:path[@isBody=\'1\']/@d', namespaces=inkex.NSS):
+			
+			l = rePoint.finditer(str(result))
+			
+			points = []
+			
+			for match in l:
+				points.append(self.parsePoint(match.group()))
+				
+			defXml.addBody(points)
+			
+			
+		return defXml.toXml()
+	
+	def parsePoint(self, pntStr):
+		reDec = re.compile(r"\d+([.]\d+)?")
+		
+		l = reDec.finditer(pntStr)
+		
+		x = float(l.next().group())
+		y = float(l.next().group())
+		
+		return [x, y]
+	
+	def logError(self, text):
+		self.errorStr += '\n' + text 
+			
 		
 	def output(self):
 		'''
