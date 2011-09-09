@@ -1,5 +1,7 @@
 package de.julianfeja.games.libgdx.graphics;
 
+import java.awt.Rectangle;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Mesh;
 import com.badlogic.gdx.graphics.Pixmap;
@@ -11,35 +13,24 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.utils.Array;
 
 import daniel.weck.BayazitDecomposer;
-import daniel.weck.TextureConverter;
 
-public class TextureObject {
+public abstract class TextureObject {
 	protected String assetPath;
 	protected Texture texture;
 	protected Array<Array<Vector2>> polygons;
 	protected Mesh mesh;
+	protected Rectangle rect;
 
-	public TextureObject(String assetPath) {
-		final Pixmap pixmap = new Pixmap(Gdx.files.internal(assetPath));
+	public TextureObject(Pixmap pixmap, Rectangle rect) {
+		texture = TextureManager.instance().createTexture(assetPath, pixmap);
 
-		texture = new Texture(pixmap);
-
-		Array<Vector2> outline = createOutline(pixmap);
-
-		polygons = createPolygons(outline);
-
-		mesh = create_TextureMesh(outline);
-
-		pixmap.dispose();
+		this.rect = rect;
 	}
 
-	public TextureObject(TextureObject textureObject, Array<Vector2> outline) {
-		assetPath = textureObject.getAssetPath();
-		texture = textureObject.getTexture();
-
+	protected void init(Array<Vector2> outline) {
 		polygons = createPolygons(outline);
 
-		mesh = create_TextureMesh(outline);
+		mesh = createTextureMesh(outline);
 	}
 
 	public Texture getTexture() {
@@ -56,31 +47,6 @@ public class TextureObject {
 
 	public Mesh getMesh() {
 		return mesh;
-	}
-
-	protected Array<Vector2> createOutline(Pixmap pixmap) {
-		int size = pixmap.getWidth() * pixmap.getHeight();
-		int[] array = new int[size];
-		for (int y = 0; y < pixmap.getHeight(); y++) {
-			for (int x = 0; x < pixmap.getWidth(); x++) {
-				int color = pixmap.getPixel(x, y);
-				array[x + y * pixmap.getWidth()] = color;
-			}
-		}
-		int w = pixmap.getWidth();
-		int h = pixmap.getHeight();
-		Array<Vector2> outline = null;
-		try {
-			outline = TextureConverter.createPolygon(array, w, h);
-		} catch (Exception e) {
-			Gdx.app.log(this.getClass().getCanonicalName(), e.getMessage());
-		}
-
-		if (!BayazitDecomposer.IsCounterClockWise(outline)) {
-			outline.reverse();
-		}
-
-		return outline;
 	}
 
 	public Array<Array<Vector2>> createPolygons(Array<Vector2> outline) {
@@ -137,7 +103,7 @@ public class TextureObject {
 		return polygonShapes;
 	}
 
-	Mesh create_TextureMesh(Array<Vector2> outline) {
+	protected Mesh createTextureMesh(Array<Vector2> outline) {
 		int stride = 5;
 		float[] vertices = new float[outline.size * stride];
 		short[] indices = new short[outline.size];
@@ -177,10 +143,6 @@ public class TextureObject {
 	}
 
 	public void dispose() {
-		// protected String assetPath;
-		// protected Texture texture;
-		// protected Array<Array<Vector2>> polygons;
-
 		mesh.dispose();
 	}
 
