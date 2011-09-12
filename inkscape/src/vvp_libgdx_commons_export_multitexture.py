@@ -184,7 +184,7 @@ class ExportBody(inkex.Effect):
 		f.close()
 		
 	def exportPaths(self):
-		rePoint = re.compile(r"\d+([.]\d+)?L\d+([.]\d+)?")
+		rePoint = re.compile(r"L\d+([.]\d+)? \d+([.]\d+)?")
 		defXml = DefXml()
 		
 		for result in self.document.xpath('//svg:path[@isBody=\'1\']/@d', namespaces=inkex.NSS):
