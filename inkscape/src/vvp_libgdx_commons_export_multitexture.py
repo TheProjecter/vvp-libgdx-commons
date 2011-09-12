@@ -193,8 +193,14 @@ class ExportBody(inkex.Effect):
 			
 			points = []
 			
+			lastPoint = []
+			
 			for match in l:
-				points.append(self.parsePoint(match.group()))
+				point = self.parsePoint(match.group())
+				
+				if point != lastPoint:
+					points.append(point)
+					lastPoint = point
 				
 			defXml.addBody(points)
 			
