@@ -21,6 +21,17 @@ public class SpritePhysicsObject extends PhysicsObject {
 		body = createBody();
 	}
 
+	public SpritePhysicsObject(Vector2 position, float scale,
+			TextureObject textureObject, World world) {
+		this(position, textureObject.getDimension().mul(scale), textureObject,
+				world);
+	}
+
+	public SpritePhysicsObject(Vector2 position, TextureObject textureObject,
+			World world) {
+		this(position, textureObject.getDimension(), textureObject, world);
+	}
+
 	@Override
 	public void createFixtures(Body body) {
 

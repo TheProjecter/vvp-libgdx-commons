@@ -13,7 +13,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Array;
 
 public class ZipInput {
@@ -23,7 +22,7 @@ public class ZipInput {
 
 	public ZipInput(String assetPath) {
 		try {
-			URL url = FileHandle.class.getResource(assetPath);
+			URL url = this.getClass().getClassLoader().getResource(assetPath);
 			if (url == null) {
 				throw new FileNotFoundException();
 			}
@@ -45,11 +44,9 @@ public class ZipInput {
 	}
 
 	protected byte[] getEntryAsByteArray(String entryName) throws IOException {
-		ZipEntry entry = zipFile.getEntry(entryName);
-
 		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 
-		InputStream is = zipFile.getInputStream(entry);
+		InputStream is = getEntryStream(entryName);
 
 		int nRead;
 		byte[] data = new byte[16384];
@@ -65,10 +62,9 @@ public class ZipInput {
 	}
 
 	protected String getEntryAsString(String entryName) throws IOException {
-		ZipEntry entry = zipFile.getEntry(entryName);
 		StringBuilder stringBuilder = new StringBuilder();
 
-		InputStream is = zipFile.getInputStream(entry);
+		InputStream is = getEntryStream(entryName);
 
 		BufferedReader bufferedReader = new BufferedReader(
 				new InputStreamReader(is));
@@ -82,6 +78,12 @@ public class ZipInput {
 		bufferedReader.close();
 
 		return stringBuilder.toString();
+	}
+
+	protected InputStream getEntryStream(String entryName) throws IOException {
+		ZipEntry entry = zipFile.getEntry(entryName);
+
+		return zipFile.getInputStream(entry);
 	}
 
 	public void close() {

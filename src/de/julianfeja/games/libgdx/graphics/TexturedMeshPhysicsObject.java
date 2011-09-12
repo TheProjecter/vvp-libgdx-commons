@@ -31,6 +31,20 @@ public class TexturedMeshPhysicsObject extends SpritePhysicsObject {
 
 	}
 
+	public TexturedMeshPhysicsObject(Vector2 position,
+			TextureObject textureObject, World world) {
+		this(position, textureObject.getDimension(), textureObject, world,
+				null, 0);
+
+	}
+
+	public TexturedMeshPhysicsObject(Vector2 position, float scale,
+			TextureObject textureObject, World world) {
+		this(position, textureObject.getDimension().mul(scale), textureObject,
+				world, null, 0);
+
+	}
+
 	@Override
 	public void paint(SpriteBatch batch) {
 		update();
@@ -87,8 +101,8 @@ public class TexturedMeshPhysicsObject extends SpritePhysicsObject {
 				}
 
 				subParts.add(new TexturedMeshPhysicsObject(body.getPosition(),
-						dimension, new TextureObject(textureObject, polygon),
-						world, body.getLinearVelocity(), body.getAngle()));
+						dimension, textureObject.getCopy(polygon), world, body
+								.getLinearVelocity(), body.getAngle()));
 
 				polygon.reverse();
 			}
