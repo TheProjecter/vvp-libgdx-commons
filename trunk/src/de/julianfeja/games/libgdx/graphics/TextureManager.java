@@ -3,8 +3,13 @@ package de.julianfeja.games.libgdx.graphics;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
+
+import de.julianfeja.games.libgdx.input.ZipMultitextureInput;
 
 public class TextureManager {
 	private static TextureManager textureManager = null;
@@ -30,7 +35,7 @@ public class TextureManager {
 		textures = new HashMap<String, Texture>();
 	}
 
-	static TextureManager instance() {
+	public static TextureManager instance() {
 		if (textureManager != null) {
 			return textureManager;
 		} else {
@@ -60,15 +65,52 @@ public class TextureManager {
 	}
 
 	public TextureObject createTextureObject(String assetPath,
-			FileType fileType, BodyPolicy bodyPolicy) {
+			TexturePath texturePath) {
 
-		return null;
+		Pixmap pixmap = null;
+
+		TextureObject ret = null;
+
+		Array<Vector2> outline = null;
+
+		if (texturePath.fileType == FileType.Image
+				|| texturePath.fileType == FileType.SubImage) {
+			pixmap = new Pixmap(Gdx.files.internal(assetPath));
+		} else if (texturePath.fileType == FileType.Multitexture) {
+			ZipMultitextureInput zipInput = new ZipMultitextureInput(
+					texturePath.path);
+
+			pixmap = zipInput.getPixmap();
+			outline = zipInput.getOutline(texturePath.index);
+
+			zipInput.close();
+		}
+
+		if (texturePath.bodyPolicy == BodyPolicy.Box) {
+			ret = new BoxBodyTexture(pixmap);
+		} else if (texturePath.bodyPolicy == BodyPolicy.Parse) {
+			ret = new ParsedBodyTexture(pixmap);
+		} else if (texturePath.bodyPolicy == BodyPolicy.Predefined) {
+			ret = new SimpleOutlinedTextureObject(pixmap, outline);
+		}
+
+		pixmap.dispose();
+
+		return ret;
 	}
 
 	public TextureObject createTextureObject(String assetPath) {
 		TexturePath texturePath = analysePath(assetPath);
 
-		return null;
+		return createTextureObject(assetPath, texturePath);
+	}
+
+	public TextureObject createParsedBodyTexture(String assetPath) {
+		TexturePath texturePath = analysePath(assetPath);
+
+		texturePath.bodyPolicy = BodyPolicy.Parse;
+
+		return createTextureObject(assetPath, texturePath);
 	}
 
 	protected TexturePath analysePath(String path) {
@@ -86,13 +128,16 @@ public class TextureManager {
 		texturePath.path = path;
 		texturePath.index = index;
 
-		String extension = path.substring(path.lastIndexOf('.'), path.length());
+		String extension = path.substring(path.lastIndexOf('.') + 1,
+				path.length());
 
 		if (extension.toUpperCase().equals("PNG")
 				|| extension.toUpperCase().equals("JPG")) {
 			texturePath.fileType = FileType.Image;
+			texturePath.bodyPolicy = BodyPolicy.Box;
 		} else if (extension.toUpperCase().equals("ZIP")) {
 			texturePath.fileType = FileType.Multitexture;
+			texturePath.bodyPolicy = BodyPolicy.Predefined;
 		}
 
 		return texturePath;

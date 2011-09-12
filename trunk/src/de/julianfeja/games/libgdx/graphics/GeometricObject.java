@@ -6,6 +6,11 @@ public abstract class GeometricObject implements Paintable {
 	protected Vector2 position;
 	protected Vector2 dimension;
 
+	/*
+	 * pixels per meter
+	 */
+	public final static int PPM = 15;
+
 	public GeometricObject(Vector2 position, Vector2 dimension) {
 		this.position = position;
 		this.dimension = dimension;

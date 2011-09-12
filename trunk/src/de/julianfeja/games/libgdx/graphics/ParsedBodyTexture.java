@@ -14,7 +14,12 @@ public class ParsedBodyTexture extends TextureObject {
 
 	public ParsedBodyTexture(Pixmap pixmap, Rectangle rect) {
 		super(pixmap, rect);
-		// TODO Auto-generated constructor stub
+
+		init(createOutline(pixmap, rect));
+	}
+
+	public ParsedBodyTexture(Pixmap pixmap) {
+		this(pixmap, new Rectangle(0, 0, pixmap.getWidth(), pixmap.getHeight()));
 	}
 
 	protected Array<Vector2> createOutline(Pixmap pixmap, Rectangle rect) {
@@ -32,7 +37,7 @@ public class ParsedBodyTexture extends TextureObject {
 		try {
 			outline = TextureConverter.createPolygon(array, w, h);
 		} catch (Exception e) {
-			Gdx.app.log(this.getClass().getCanonicalName(), e.getMessage());
+			Gdx.app.log(this.getClass().getName(), e.getMessage());
 		}
 
 		if (!BayazitDecomposer.IsCounterClockWise(outline)) {

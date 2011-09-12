@@ -20,11 +20,23 @@ public abstract class TextureObject {
 	protected Array<Array<Vector2>> polygons;
 	protected Mesh mesh;
 	protected Rectangle rect;
+	protected Vector2 dimension;
 
 	public TextureObject(Pixmap pixmap, Rectangle rect) {
 		texture = TextureManager.instance().createTexture(assetPath, pixmap);
 
+		dimension = new Vector2(pixmap.getWidth() / GeometricObject.PPM,
+				pixmap.getHeight() / GeometricObject.PPM);
+
 		this.rect = rect;
+	}
+
+	public TextureObject(TextureObject other, Array<Vector2> outline) {
+		texture = other.getTexture();
+
+		this.rect = other.getRect();
+
+		init(outline);
 	}
 
 	protected void init(Array<Vector2> outline) {
@@ -47,6 +59,14 @@ public abstract class TextureObject {
 
 	public Mesh getMesh() {
 		return mesh;
+	}
+
+	public Rectangle getRect() {
+		return rect;
+	}
+
+	public Vector2 getDimension() {
+		return dimension;
 	}
 
 	public Array<Array<Vector2>> createPolygons(Array<Vector2> outline) {
@@ -144,6 +164,10 @@ public abstract class TextureObject {
 
 	public void dispose() {
 		mesh.dispose();
+	}
+
+	public TextureObject getCopy(Array<Vector2> outline) {
+		return new SimpleOutlinedTextureObject(this, outline);
 	}
 
 }
