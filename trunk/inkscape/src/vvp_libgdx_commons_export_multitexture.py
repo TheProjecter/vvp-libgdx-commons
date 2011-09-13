@@ -67,7 +67,7 @@ class SvgSize:
 		x = 2
 		
 		while (True):
-			if x > self.width:
+			if x >= self.width:
 				self.width = x
 				break			
 			
@@ -76,7 +76,7 @@ class SvgSize:
 		x = 2
 		
 		while (True):
-			if x > self.height:
+			if x >= self.height:
 				self.height = x
 				break			
 			
