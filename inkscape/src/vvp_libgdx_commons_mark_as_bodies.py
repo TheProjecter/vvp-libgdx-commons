@@ -33,9 +33,9 @@ class MarkBodies(inkex.Effect):
 			
 				node.set('isBody', '1')
 				if self.options.hide:
-					node.set('style', 'fill:#d4ff2a;fill-opacity:0.06787331;opacity:0;stroke:#c4f700;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:6, 6;stroke-dashoffset:0')
+					node.set('style', 'fill:#d4ff2a;fill-opacity:0.4;opacity:0;stroke:#c4f700;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:6, 6;stroke-dashoffset:0')
 				else:
-					node.set('style', 'fill:#d4ff2a;fill-opacity:0.06787331;stroke:#c4f700;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:6, 6;stroke-dashoffset:0')
+					node.set('style', 'fill:#d4ff2a;fill-opacity:0.4;stroke:#c4f700;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:6, 6;stroke-dashoffset:0')
 				#sys.stderr.write(pnts)
 		
 		
