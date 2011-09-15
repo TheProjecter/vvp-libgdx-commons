@@ -3,6 +3,7 @@ package de.julianfeja.games.libgdx.graphics;
 import java.awt.Rectangle;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.Mesh;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
@@ -21,6 +22,7 @@ public abstract class TextureObject {
 	protected Mesh mesh;
 	protected Rectangle rect;
 	protected Vector2 dimension;
+	protected int meshMode = GL10.GL_TRIANGLES;
 
 	public TextureObject(Pixmap pixmap, Rectangle rect) {
 		texture = TextureManager.instance().createTexture(assetPath, pixmap);
@@ -33,6 +35,7 @@ public abstract class TextureObject {
 
 	public TextureObject(TextureObject other, Array<Vector2> outline) {
 		texture = other.getTexture();
+		this.dimension = other.getDimension();
 
 		this.rect = other.getRect();
 
@@ -42,7 +45,17 @@ public abstract class TextureObject {
 	protected void init(Array<Vector2> outline) {
 		polygons = createPolygons(outline);
 
-		mesh = createTextureMesh(outline);
+		if (meshMode == GL10.GL_TRIANGLES) {
+			mesh = createTriangleMesh(triangulate(polygons));
+		} else if (meshMode == GL10.GL_TRIANGLE_FAN) {
+			mesh = createTextureMesh(outline);
+		}
+
+		trimRectangle(outline);
+	}
+
+	public int getMeshMode() {
+		return meshMode;
 	}
 
 	public Texture getTexture() {
@@ -69,6 +82,31 @@ public abstract class TextureObject {
 		return dimension;
 	}
 
+	protected void trimRectangle(Array<Vector2> outline) {
+		int minX = Integer.MAX_VALUE;
+		int minY = Integer.MAX_VALUE;
+
+		int maxX = 0;
+		int maxY = 0;
+
+		for (Vector2 vector2 : outline) {
+			if (vector2.x > maxX) {
+				maxX = (int) vector2.x;
+			}
+			if (vector2.y > maxY) {
+				maxY = (int) vector2.y;
+			}
+			if (vector2.x < minX) {
+				minX = (int) vector2.x;
+			}
+			if (vector2.y < minY) {
+				minY = (int) vector2.y;
+			}
+		}
+
+		rect = new Rectangle(minX, minY, maxX - minX, maxY - minY);
+	}
+
 	public Array<Array<Vector2>> createPolygons(Array<Vector2> outline) {
 
 		Array<Array<Vector2>> polygons = BayazitDecomposer
@@ -84,7 +122,88 @@ public abstract class TextureObject {
 			}
 		}
 		return polygons;
+	}
 
+	protected Mesh createTriangleMesh(Array<Array<Vector2>> polygons) {
+		polygons = triangulate(polygons);
+
+		short[] indices = new short[polygons.size * 3];
+
+		int n = 0;
+
+		Array<Vector2> vertices = new Array<Vector2>();
+
+		for (Array<Vector2> polygon : polygons) {
+			for (Vector2 vector : polygon) {
+				int pos = addOrFind(vertices, vector);
+				indices[n++] = (short) pos;
+			}
+		}
+
+		int stride = 5;
+		float[] verticesArray = new float[vertices.size * stride];
+
+		n = 0;
+
+		for (Vector2 vect : vertices) {
+			int i = stride * n++;
+
+			verticesArray[i++] = vect.x;
+			verticesArray[i++] = vect.y;
+			verticesArray[i++] = 0;
+
+			float u = (vect.x) / texture.getWidth();
+			float v = (vect.y) / texture.getHeight();
+
+			verticesArray[i++] = u; // u
+			verticesArray[i++] = v; // v
+		}
+
+		Mesh mesh = new Mesh(true, verticesArray.length, indices.length,
+				new VertexAttribute(Usage.Position, 3, "a_position"),
+				new VertexAttribute(Usage.TextureCoordinates, 2, "a_texCoords"));
+
+		mesh.setVertices(verticesArray);
+		mesh.setIndices(indices);
+
+		return mesh;
+	}
+
+	protected int addOrFind(Array<Vector2> vertices, Vector2 vector) {
+		int pos = vertices.indexOf(vector, true);
+		if (pos == -1) {
+			vertices.add(vector.cpy());
+			return vertices.size - 1;
+		} else {
+			return pos;
+		}
+	}
+
+	protected Array<Array<Vector2>> triangulate(
+			Array<Array<Vector2>> oldPolygons) {
+		Array<Array<Vector2>> polygons = new Array<Array<Vector2>>();
+
+		for (Array<Vector2> oldPolygon : oldPolygons) {
+			if (oldPolygon.size >= 3) {
+				Vector2 firstPoint = oldPolygon.get(0);
+
+				for (int i = 1; i < oldPolygon.size - 1; i++) {
+					Array<Vector2> polygon = new Array<Vector2>();
+
+					polygon.add(firstPoint.cpy());
+					polygon.add(oldPolygon.get(i).cpy());
+					polygon.add(oldPolygon.get(i + 1).cpy());
+
+					if (BayazitDecomposer.IsCounterClockWise(polygon)) {
+						polygon.reverse();
+					}
+
+					polygons.add(polygon);
+				}
+			}
+		}
+
+		return polygons;
 	}
 
 	public Array<PolygonShape> createPolygonShapes(Vector2 dimension) {
@@ -128,26 +247,18 @@ public abstract class TextureObject {
 		float[] vertices = new float[outline.size * stride];
 		short[] indices = new short[outline.size];
 
-		int j = -1;
-		int offset = -1;
 		for (int i = 0; i < outline.size; i++) {
 			Vector2 vect = outline.get(i);
-			j = i * stride;
-			offset = -1;
-			++offset;
-			vertices[j + offset] = vect.x;
-			++offset;
-			vertices[j + offset] = vect.y;
-			++offset;
-			vertices[j + offset] = 0;
+			int j = i * stride;
+			vertices[j++] = vect.x;
+			vertices[j++] = vect.y;
+			vertices[j++] = 0;
 
 			float u = (vect.x) / texture.getWidth();
 			float v = (vect.y) / texture.getHeight();
 
-			++offset;
-			vertices[j + offset] = u; // u
-			++offset;
-			vertices[j + offset] = v; // v
+			vertices[j++] = u; // u
+			vertices[j++] = v; // v
 
 			indices[i] = (short) i;
 		}

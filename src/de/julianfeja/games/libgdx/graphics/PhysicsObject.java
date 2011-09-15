@@ -15,10 +15,13 @@ abstract public class PhysicsObject extends GeometricObject implements Physical 
 	protected Body body;
 	protected World world;
 	protected boolean active = false;
+	protected Vector2 dimension;
 
-	public PhysicsObject(Vector2 position, Vector2 dimension, World world) {
-		super(position, dimension);
+	public PhysicsObject(Vector2 position, Vector2 scale, Vector2 dimension,
+			World world) {
+		super(position, scale);
 
+		this.dimension = dimension;
 		this.world = world;
 		active = true;
 	}

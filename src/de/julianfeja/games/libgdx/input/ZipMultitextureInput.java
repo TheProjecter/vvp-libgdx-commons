@@ -69,7 +69,7 @@ public class ZipMultitextureInput extends ZipInput {
 				float x = Float.parseFloat(pointNode.valueOf("@x"));
 				float y = Float.parseFloat(pointNode.valueOf("@y"));
 
-				outline.add(new Vector2(x, y + pixmap.getHeight() / 2));
+				outline.add(new Vector2(x, y));
 			}
 
 			if (!BayazitDecomposer.IsCounterClockWise(outline)) {

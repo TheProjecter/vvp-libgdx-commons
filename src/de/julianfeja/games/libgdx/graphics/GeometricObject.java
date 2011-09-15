@@ -4,21 +4,21 @@ import com.badlogic.gdx.math.Vector2;
 
 public abstract class GeometricObject implements Paintable {
 	protected Vector2 position;
-	protected Vector2 dimension;
+	protected Vector2 scale;
 
 	/*
 	 * pixels per meter
 	 */
-	public final static int PPM = 15;
+	public final static float PPM = 15f;
 
-	public GeometricObject(Vector2 position, Vector2 dimension) {
+	public GeometricObject(Vector2 position, Vector2 scale) {
 		this.position = position;
-		this.dimension = dimension;
+		this.scale = scale;
 
 	}
 
 	@Override
-	public Vector2 getPosition() {
-		return position;
+	public Vector2 getScale() {
+		return scale;
 	}
 }

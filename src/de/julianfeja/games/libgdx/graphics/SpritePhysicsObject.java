@@ -1,5 +1,7 @@
 package de.julianfeja.games.libgdx.graphics;
 
+import java.awt.Rectangle;
+
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
@@ -12,9 +14,10 @@ import com.badlogic.gdx.physics.box2d.World;
 public class SpritePhysicsObject extends PhysicsObject {
 	protected TextureObject textureObject;
 
-	public SpritePhysicsObject(Vector2 position, Vector2 dimension,
+	public SpritePhysicsObject(Vector2 position, Vector2 scale,
 			TextureObject textureObject, World world) {
-		super(position, dimension, world);
+		super(position, scale, new Vector2(textureObject.getDimension().x
+				* scale.x, textureObject.getDimension().y * scale.y), world);
 
 		this.textureObject = textureObject;
 
@@ -23,13 +26,13 @@ public class SpritePhysicsObject extends PhysicsObject {
 
 	public SpritePhysicsObject(Vector2 position, float scale,
 			TextureObject textureObject, World world) {
-		this(position, textureObject.getDimension().mul(scale), textureObject,
-				world);
+
+		this(position, new Vector2(scale, scale), textureObject, world);
 	}
 
 	public SpritePhysicsObject(Vector2 position, TextureObject textureObject,
 			World world) {
-		this(position, textureObject.getDimension(), textureObject, world);
+		this(position, 1.0f, textureObject, world);
 	}
 
 	@Override
@@ -58,13 +61,17 @@ public class SpritePhysicsObject extends PhysicsObject {
 	public void paint(SpriteBatch batch) {
 		super.paint(batch);
 		float angle = MathUtils.radiansToDegrees * body.getAngle();
-		batch.draw(textureObject.getTexture(), position.x, position.y
-				- dimension.y, 0f, dimension.y, dimension.x, dimension.y, 1f,
-				1f, angle, 0, 0, 0, 0, false, false);
 
-		batch.draw(new TextureRegion(textureObject.getTexture()), position.x,
-				position.y - dimension.y, 0, dimension.y, dimension.x,
-				dimension.y, 1.0f, 1.0f, angle);
+		Rectangle rect = textureObject.getRect();
+		Vector2 pixmapDimension = new Vector2(rect.width / GeometricObject.PPM,
+				rect.height / GeometricObject.PPM);
+		Vector2 rectPos = new Vector2(rect.x / GeometricObject.PPM, -rect.y
+				/ GeometricObject.PPM - pixmapDimension.y);
+
+		batch.draw(new TextureRegion(textureObject.getTexture(), rect.x,
+				rect.y, rect.width, rect.height), position.x + rectPos.x,
+				position.y + rectPos.y, -rectPos.x, -rectPos.y,
+				pixmapDimension.x, pixmapDimension.y, 1f, 1f, angle);
 
 	}
 

@@ -11,10 +11,10 @@ import com.badlogic.gdx.utils.Array;
 
 public class TexturedMeshPhysicsObject extends SpritePhysicsObject {
 
-	public TexturedMeshPhysicsObject(Vector2 position, Vector2 dimension,
+	public TexturedMeshPhysicsObject(Vector2 position, Vector2 scale,
 			TextureObject textureObject, World world, Vector2 velocity,
 			float angle) {
-		super(position, dimension, textureObject, world);
+		super(position, scale, textureObject, world);
 		// TODO Auto-generated constructor stub
 
 		if (velocity != null) {
@@ -25,23 +25,21 @@ public class TexturedMeshPhysicsObject extends SpritePhysicsObject {
 
 	}
 
-	public TexturedMeshPhysicsObject(Vector2 position, Vector2 dimension,
+	public TexturedMeshPhysicsObject(Vector2 position, Vector2 scale,
 			TextureObject textureObject, World world) {
-		this(position, dimension, textureObject, world, null, 0);
+		this(position, scale, textureObject, world, null, 0);
 
 	}
 
 	public TexturedMeshPhysicsObject(Vector2 position,
 			TextureObject textureObject, World world) {
-		this(position, textureObject.getDimension(), textureObject, world,
-				null, 0);
+		this(position, 1.0f, textureObject, world);
 
 	}
 
 	public TexturedMeshPhysicsObject(Vector2 position, float scale,
 			TextureObject textureObject, World world) {
-		this(position, textureObject.getDimension().mul(scale), textureObject,
-				world, null, 0);
+		this(position, new Vector2(scale, scale), textureObject, world, null, 0);
 
 	}
 
@@ -67,7 +65,7 @@ public class TexturedMeshPhysicsObject extends SpritePhysicsObject {
 
 		Mesh mesh = textureObject.getMesh();
 
-		mesh.render(GL10.GL_TRIANGLE_FAN);
+		mesh.render(textureObject.getMeshMode());
 
 		gl.glPopMatrix();
 	}
@@ -101,7 +99,7 @@ public class TexturedMeshPhysicsObject extends SpritePhysicsObject {
 				}
 
 				subParts.add(new TexturedMeshPhysicsObject(body.getPosition(),
-						dimension, textureObject.getCopy(polygon), world, body
+						scale, textureObject.getCopy(polygon), world, body
 								.getLinearVelocity(), body.getAngle()));
 
 				polygon.reverse();
