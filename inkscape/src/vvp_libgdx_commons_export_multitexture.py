@@ -95,7 +95,7 @@ class ExportBody(inkex.Effect):
 		rePoint = re.compile(r"[\sL]\d+([.]\d+)?[\s,]\d+([.]\d+)?")
 		defXml = DefXml()
 		
-		for result in self.document.xpath('//svg:path[@isBody=\'1\']/@d', namespaces=inkex.NSS):
+		for result in self.document.xpath('//svg:path[@vvpType=\'Body\']/@d', namespaces=inkex.NSS):
 			
 			l = rePoint.finditer(str(result))
 			
