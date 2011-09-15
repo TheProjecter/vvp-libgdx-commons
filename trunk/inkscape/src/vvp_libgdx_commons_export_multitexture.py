@@ -4,101 +4,9 @@
 # We will use the inkex module with the predefined Effect base class.
 import inkex, tempfile, os, zipfile, sys, shutil, re
 
-import xml.dom.minidom as dom
+from vvp_libgdx_commons_inkscape import SvgSize, DefXml, parsePoint
 
 from subprocess import Popen, PIPE
-
-class DefXml:
-	rootElement = dom.Element("vvp_libgdx_file")
-	
-	def toXml(self):
-		return self.rootElement.toprettyxml()
-	
-	def addBody(self, points):
-		bodyElement = dom.Element("body")
-		
-		for point in points:
-			pointElement = dom.Element("point")
-			
-			pointElement.setAttribute("x", str(point[0]))
-			pointElement.setAttribute("y", str(point[1]))
-			
-			bodyElement.appendChild(pointElement)
-			
-		self.rootElement.appendChild(bodyElement)
-	
-
-class SvgSize:
-	inchPerMm = 25.4
-	dpi = 90
-	pxPerPt = 1.25
-	
-	def __init__(self, width, height):
-		self.width = self.toPx(width)
-		self.height = self.toPx(height)
-			
-	def toPx(self, value):
-		reMm = re.compile(r"\d+([.]\d+)?mm")
-		rePt = re.compile(r"\d+([.]\d+)?pt")
-		
-		ret = 1
-		
-		match = reMm.match(value)
-		
-		if match != None and match.group() == value:
-			value = self.toDec(value)
-			
-			value = value / self.inchPerMm
-			ret = value * self.dpi
-		else:
-			match = rePt.match(value)
-			if match != None and match.group() == value:
-				value = self.toDec(value)
-			
-				ret = value * self.pxPerPt
-			else:
-				ret = value
-				
-		ret = int(ret)
-		
-		return ret
-	
-	def roundUpToPowerOfTwo(self):
-		x = 2
-		
-		while (True):
-			if x >= self.width:
-				self.width = x
-				break			
-			
-			x = 2*x
-			
-		x = 2
-		
-		while (True):
-			if x >= self.height:
-				self.height = x
-				break			
-			
-			x = 2*x
-
-
-	def toDec(self, value):
-		reDec = re.compile(r"\d+([.]\d+)?")
-		
-		ret = 1.0
-		
-		match = reDec.match(value)
-		if match != None:
-			ret = float(match.group())
-			
-		return ret
-	
-	def isValid(self):
-		if self.width > 20000 or self.height > 20000:
-			return False
-		else:
-			return True
 
 
 class ExportBody(inkex.Effect):
@@ -196,7 +104,7 @@ class ExportBody(inkex.Effect):
 			lastPoint = []
 			
 			for match in l:
-				point = self.parsePoint(match.group())
+				point = parsePoint(match.group())
 				
 				if point != lastPoint:
 					points.append(point)
@@ -206,16 +114,6 @@ class ExportBody(inkex.Effect):
 			
 			
 		return defXml.toXml()
-	
-	def parsePoint(self, pntStr):
-		reDec = re.compile(r"\d+([.]\d+)?")
-		
-		l = reDec.finditer(pntStr)
-		
-		x = float(l.next().group())
-		y = float(l.next().group())
-		
-		return [x, y]
 	
 	def logError(self, text):
 		self.errorStr += '\n' + text 
