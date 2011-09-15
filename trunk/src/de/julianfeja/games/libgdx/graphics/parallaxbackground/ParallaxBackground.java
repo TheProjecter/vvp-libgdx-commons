@@ -48,7 +48,7 @@ public class ParallaxBackground implements Paintable {
 	}
 
 	@Override
-	public Vector2 getPosition() {
+	public Vector2 getScale() {
 		// TODO Auto-generated method stub
 		return null;
 	}

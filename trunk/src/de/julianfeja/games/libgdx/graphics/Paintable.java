@@ -6,7 +6,7 @@ import com.badlogic.gdx.math.Vector2;
 public interface Paintable {
 	public void paint(SpriteBatch batch);
 
-	public Vector2 getPosition();
+	public Vector2 getScale();
 
 	public void dispose();
 }
