@@ -19,8 +19,8 @@ class UnmarkBodies(inkex.Effect):
 		for id, node in self.selected.iteritems():
 			if node.tag == inkex.addNS('path','svg'):
 				
-				if node.get('isBody') == '1':
-					node.set('isBody', '0')
+				if node.get('vvpType') == 'Body':
+					node.set('vvpType', 'void')
 					setStyle(node, 'fill', '#ff522a')
 					setStyle(node, 'stroke', '#f72f00')
 				

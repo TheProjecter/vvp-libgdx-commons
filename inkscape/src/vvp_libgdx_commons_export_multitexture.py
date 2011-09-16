@@ -95,7 +95,9 @@ class ExportBody(inkex.Effect):
 		rePoint = re.compile(r"[\sL]\d+([.]\d+)?[\s,]\d+([.]\d+)?")
 		defXml = DefXml()
 		
-		for result in self.document.xpath('//svg:path[@vvpType=\'Body\']/@d', namespaces=inkex.NSS):
+		for id in self.document.xpath('//svg:path[@vvpType=\'Body\']/@id', namespaces=inkex.NSS):
+			
+			result = self.xpathSingle('//svg:path[@id=\'' + str(id) + '\']/@d')
 			
 			l = rePoint.finditer(str(result))
 			
@@ -110,7 +112,7 @@ class ExportBody(inkex.Effect):
 					points.append(point)
 					lastPoint = point
 				
-			defXml.addBody(points)
+			defXml.addBody(id, points)
 			
 			
 		return defXml.toXml()
