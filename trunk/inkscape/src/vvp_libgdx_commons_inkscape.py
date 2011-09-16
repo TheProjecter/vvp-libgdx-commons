@@ -60,8 +60,9 @@ class DefXml:
 	def toXml(self):
 		return self.rootElement.toprettyxml()
 	
-	def addBody(self, points):
+	def addBody(self, id, points):
 		bodyElement = dom.Element("body")
+		#bodyElement.setAttribute("id", id)
 		
 		for point in points:
 			pointElement = dom.Element("point")
