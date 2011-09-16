@@ -16,7 +16,7 @@ class CreateRevoluteJoint(inkex.Effect):
 
 	def effect(self):
 		if(len(self.selected) == 2):
-			self.selected.get(0)
+			sys.stderr.write(self.selected.get(0))
 			self.selected.get(1)
 		else:
 			sys.stderr.write("You have to select exactly two bodys.");
