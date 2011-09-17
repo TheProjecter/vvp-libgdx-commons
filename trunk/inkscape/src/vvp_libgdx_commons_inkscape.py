@@ -12,9 +12,8 @@ def showAllBodies(document):
 	setOpacityToAll(document, 1)
 			
 def setOpacityToAll(document, opacity):
-	for node in document.xpath('//svg:path[@isBody=\'1\']', namespaces=inkex.NSS):
-		if node.get('isBody') == '1':
-			setStyle(node, 'opacity', str(opacity))
+	for node in document.xpath('//svg:path[@vvpType=\'Body\']', namespaces=inkex.NSS):
+		setStyle(node, 'opacity', str(opacity))
 			
 def setStyle(node, key, value):
 	style = parseStyle(node.get('style'))
@@ -28,6 +27,7 @@ def getStyle(node, key):
 def flattenPath(node, flat):
 	if node.tag == inkex.addNS('path','svg'):
 		d = node.get('d')
+		
 		p = cubicsuperpath.parsePath(d)
 		cspsubdiv.cspsubdiv(p, flat)
 		np = []
@@ -45,14 +45,37 @@ def flattenPath(node, flat):
 		node.set('d',simplepath.formatPath(np))
 		return pnts
 	
-def parsePoint(pntStr):
-	reDec = re.compile(r"\d+([.]\d+)?")
+	
+def getPoints(d):
+	p = cubicsuperpath.parsePath(d)
+	
+	points = []
+	lastPoint = []
+	
+	for sp in p:
+		for csp in sp:
+			point = [csp[1][0], csp[1][1]]
+			if point != lastPoint:
+				points.append(point)
+				lastPoint = point
+				
+	lastPoint = points.pop()
+	if lastPoint != points[0]:
+		points.append(lastPoint)
+			
+	return points
+	
+	
+def avgPoint(points):
+	n = 0
+	x = 0
+	y = 0
+	for point in points:
+		x += point[0]
+		y += point[1]
+		n += 1
 		
-	l = reDec.finditer(pntStr)	
-	x = float(l.next().group())
-	y = float(l.next().group())
-		
-	return [x, y]
+	return [x/n, y/n]
 	
 class DefXml:
 	rootElement = dom.Element("vvp_libgdx_file")
@@ -60,19 +83,39 @@ class DefXml:
 	def toXml(self):
 		return self.rootElement.toprettyxml()
 	
-	def addBody(self, id, points):
+	def addBody(self, idNum, points):
 		bodyElement = dom.Element("body")
-		#bodyElement.setAttribute("id", id)
+		bodyElement.setAttribute("id", idNum)
 		
 		for point in points:
-			pointElement = dom.Element("point")
-			
-			pointElement.setAttribute("x", str(point[0]))
-			pointElement.setAttribute("y", str(point[1]))
-			
-			bodyElement.appendChild(pointElement)
+			bodyElement.appendChild(self.createPoint(point))
 			
 		self.rootElement.appendChild(bodyElement)
+		
+	def createPoint(self, point, idBody=None):
+		pointElement = dom.Element("point")
+			
+		pointElement.setAttribute("x", str(point[0]))
+		pointElement.setAttribute("y", str(point[1]))
+		
+		if idBody != None:
+			pointElement.setAttribute('body', idBody)
+		
+		return pointElement
+	
+	def addRevoluteJoint(self, idBody1, idBody2, point1, point2):
+		jointElement = self.createJoint()
+		
+		jointElement.setAttribute('type', 'Revolute')
+		jointElement.appendChild(self.createPoint(point2, idBody2))
+		jointElement.appendChild(self.createPoint(point1, idBody1))
+		
+		self.rootElement.appendChild(jointElement)
+	
+	def createJoint(self):
+		jointElement = dom.Element("joint")
+		
+		return jointElement
 	
 
 class SvgSize:
@@ -131,7 +174,7 @@ class SvgSize:
 
 
 	def toDec(self, value):
-		reDec = re.compile(r"\d+([.]\d+)?")
+		reDec = re.compile(r"[-]?\d+([.]\d+)?")
 		
 		ret = 1.0
 		

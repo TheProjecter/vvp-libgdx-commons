@@ -4,7 +4,7 @@
 # We will use the inkex module with the predefined Effect base class.
 import inkex, tempfile, os, zipfile, sys, shutil, re
 
-from vvp_libgdx_commons_inkscape import SvgSize, DefXml, parsePoint
+from vvp_libgdx_commons_inkscape import SvgSize, DefXml, getPoints
 
 from subprocess import Popen, PIPE
 
@@ -89,30 +89,34 @@ class ExportBody(inkex.Effect):
 		f = p.stdout
 		err = p.stderr
 
-		f.close()
+		f.close()	
+		
+		
 		
 	def exportPaths(self):
-		rePoint = re.compile(r"[\sL]\d+([.]\d+)?[\s,]\d+([.]\d+)?")
+		
 		defXml = DefXml()
 		
-		for id in self.document.xpath('//svg:path[@vvpType=\'Body\']/@id', namespaces=inkex.NSS):
+		for idNum in self.document.xpath('//svg:path[@vvpType=\'Body\']/@id', namespaces=inkex.NSS):
 			
-			result = self.xpathSingle('//svg:path[@id=\'' + str(id) + '\']/@d')
+			result = self.xpathSingle('//svg:path[@id=\'' + str(idNum) + '\']/@d')
 			
-			l = rePoint.finditer(str(result))
-			
-			points = []
-			
-			lastPoint = []
-			
-			for match in l:
-				point = parsePoint(match.group())
+			points = getPoints(result)
 				
-				if point != lastPoint:
-					points.append(point)
-					lastPoint = point
-				
-			defXml.addBody(id, points)
+			defXml.addBody(str(idNum), points)
+			
+		for node in self.document.xpath('//svg:path[@vvpType=\'RevoluteJoint\']', namespaces=inkex.NSS):
+			d = node.get('d')
+			idNum = node.get('id')
+			idBody1 = node.get('body1')
+			idBody2 = node.get('body2')
+			
+			points = getPoints(d)
+			
+			if len(points) >= 2:
+				point1 = points[0]
+				point2 = points[len(points) - 1]
+				defXml.addRevoluteJoint(idBody1, idBody2, point1, point2)
 			
 			
 		return defXml.toXml()
@@ -136,8 +140,7 @@ class ExportBody(inkex.Effect):
 		sys.stdout.write(out.read())
 		out.close()
 		shutil.rmtree(self.tmp_dir)
-		
-		
+
 # Create effect instance and apply it.
 
 if __name__ == '__main__':
