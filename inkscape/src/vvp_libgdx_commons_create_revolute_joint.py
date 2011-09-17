@@ -3,6 +3,8 @@
 
 # We will use the inkex module with the predefined Effect base class.
 import inkex, sys
+from lxml import etree
+from vvp_libgdx_commons_inkscape import getPoints, avgPoint
 
 class CreateRevoluteJoint(inkex.Effect):
 	"""
@@ -13,24 +15,56 @@ class CreateRevoluteJoint(inkex.Effect):
 
 		# Call the base class constructor.
 		inkex.Effect.__init__(self)
+		
+	def createMarker(self):
+		
+		if(len(self.document.xpath('//svg:marker[@id=\'CircleMarker\']', namespaces=inkex.NSS))==0):
+			svg_uri = u'http://www.w3.org/2000/svg'
+			marker = etree.Element('{%s}%s' % (svg_uri,'marker'))
+			marker.set('id', 'CircleMarker')
+		
+			path = etree.Element('{%s}%s' % (svg_uri,'path'))
+			path.set('d', 'M -2.5,-1.0 C -2.5,1.7600000 -4.7400000,4.0 -7.5,4.0 C -10.260000,4.0 -12.5,1.7600000 -12.5,-1.0 C -12.5,-3.7600000 -10.260000,-6.0 -7.5,-6.0 C -4.7400000,-6.0 -2.5,-3.7600000 -2.5,-1.0 z ')
+			path.set('style', 'fill-rule:evenodd;stroke:#000000;stroke-width:1.0pt')
+			path.set('transform', 'scale(0.8) translate(7.4, 1)')
+		
+			marker.insert(0, path)
+		
+			defs = self.xpathSingle('//svg:defs')
+			
+			defs.insert(0, marker)
+		
+	def createRevoluteJointLine(self, id1, id2, point1, point2):
+		self.createMarker()
+		
+		svg_uri = u'http://www.w3.org/2000/svg'
+		line = etree.Element('{%s}%s' % (svg_uri,'path'))
+		
+		line.set('d', 'M%f %fL%f %f' %(point1[0], point1[1], point2[0], point2[1]))
+		line.set('vvpType', 'RevoluteJoint')
+		line.set('body1', str(id1))
+		line.set('body2', str(id2))
+		line.set('style', 'fill:none;stroke:#000ff0;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-start:url(#CircleMarker);marker-end:url(#CircleMarker);stroke-miterlimit:4;stroke-dasharray:3,3;stroke-dashoffset:0')
+		
+		
+		return line
 
 	def effect(self):
 		if(len(self.selected) == 2):
-			sys.stderr.write(str(self.selected.items()))
-			self.selected.get(1)
-		else:
-			sys.stderr.write("You have to select exactly two bodys.");
-		
-#		for id, node in self.selected.iteritems():
-#			if node.tag == inkex.addNS('path','svg'):
-#				flattenPath(node, self.options.flat)
-#			
-#				node.set('vvpType', 'Body')
-#				if self.options.hide:
-#					node.set('style', 'fill:#d4ff2a;fill-opacity:0.4;opacity:0;stroke:#c4f700;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:6, 6;stroke-dashoffset:0')
-#				else:
-#					node.set('style', 'fill:#d4ff2a;fill-opacity:0.4;stroke:#c4f700;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:6, 6;stroke-dashoffset:0')
+			id1, node1 = self.selected.items()[0]
+			id2, node2 = self.selected.items()[1]
+			
+			if node1.get('vvpType') == 'Body' and node2.get('vvpType') == 'Body':
+				
+				point1 = avgPoint(getPoints(node1.get('d')))
+				point2 = avgPoint(getPoints(node2.get('d')))
+				
+				line = self.createRevoluteJointLine(id1, id2, point1, point2)
+				
+				self.current_layer.append(line)
+				return
 
+		sys.stderr.write("You have to select exactly two bodys.")
 
 	
 
