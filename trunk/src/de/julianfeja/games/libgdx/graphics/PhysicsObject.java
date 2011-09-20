@@ -42,7 +42,6 @@ abstract public class PhysicsObject extends GeometricObject implements Physical 
 		return this.body;
 	}
 
-	@Override
 	public void createFixtures(Body body) {
 		PolygonShape boxPoly = new PolygonShape();
 		boxPoly.setAsBox(dimension.x / 2, dimension.y / 2);
@@ -53,7 +52,6 @@ abstract public class PhysicsObject extends GeometricObject implements Physical 
 
 	}
 
-	@Override
 	public Body createBody() {
 		BodyDef boxBodyDef = new BodyDef();
 		boxBodyDef.type = BodyType.DynamicBody;

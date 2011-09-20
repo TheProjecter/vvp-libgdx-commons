@@ -21,4 +21,8 @@ public abstract class GeometricObject implements Paintable {
 	public Vector2 getScale() {
 		return scale;
 	}
+
+	public Vector2 getPosition() {
+		return this.position;
+	}
 }
