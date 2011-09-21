@@ -31,15 +31,9 @@ public class ZipMultitextureInput extends ZipInput {
 	public ZipMultitextureInput(String assetPath) {
 		super(assetPath);
 
-		try {
-			byte[] textureByteArray = getEntryAsByteArray("texture.png");
+		byte[] textureByteArray = getEntryAsByteArray("texture.png");
 
-			pixmap = new Pixmap(textureByteArray, 0, textureByteArray.length);
-
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		pixmap = new Pixmap(textureByteArray, 0, textureByteArray.length);
 
 		SAXReader reader = new SAXReader();
 
