@@ -1,7 +1,5 @@
 package de.julianfeja.games.libgdx.graphics;
 
-import java.awt.Rectangle;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.math.Vector2;

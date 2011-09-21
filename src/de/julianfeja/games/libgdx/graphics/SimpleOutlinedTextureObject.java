@@ -1,12 +1,11 @@
 package de.julianfeja.games.libgdx.graphics;
 
-import java.awt.Rectangle;
-
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 
 public class SimpleOutlinedTextureObject extends TextureObject {
+
 	public SimpleOutlinedTextureObject(Pixmap pixmap, Rectangle rect,
 			Array<Vector2> outline) {
 		super(pixmap, rect);
