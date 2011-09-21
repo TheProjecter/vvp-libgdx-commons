@@ -45,11 +45,11 @@ public class ZipInput {
 		return content.get(entryName);
 	}
 
-	protected String getEntryAsString(String entryName) {
-		byte[] bytes = content.get(entryName);
-
-		return String.valueOf(bytes);
-	}
+	// protected String getEntryAsString(String entryName) {
+	// byte[] bytes = content.get(entryName);
+	//
+	// return String.valueOf(bytes);
+	// }
 
 	protected InputStream getEntryStream(String entryName) throws IOException {
 		return new ByteArrayInputStream(content.get(entryName));

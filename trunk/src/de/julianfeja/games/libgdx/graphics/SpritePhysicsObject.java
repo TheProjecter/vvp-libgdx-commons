@@ -1,7 +1,5 @@
 package de.julianfeja.games.libgdx.graphics;
 
-import java.awt.Rectangle;
-
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
