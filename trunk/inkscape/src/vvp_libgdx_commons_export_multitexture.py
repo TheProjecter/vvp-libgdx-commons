@@ -4,7 +4,7 @@
 # We will use the inkex module with the predefined Effect base class.
 import inkex, tempfile, os, zipfile, sys, shutil, re
 
-from vvp_libgdx_commons_inkscape import SvgSize, DefXml, getPoints
+from vvp_libgdx_commons_inkscape import SvgSize, DefXml, getPoints, JointType
 
 from subprocess import Popen, PIPE
 
@@ -105,7 +105,7 @@ class ExportBody(inkex.Effect):
 				
 			defXml.addBody(str(idNum), points)
 			
-		for node in self.document.xpath('//svg:path[@vvpType=\'RevoluteJoint\']', namespaces=inkex.NSS):
+		for node in self.document.xpath('//svg:path[@vvpType=\'%s\']' %JointType.RevoluteJoint, namespaces=inkex.NSS):
 			d = node.get('d')
 			idNum = node.get('id')
 			idBody1 = node.get('body1')

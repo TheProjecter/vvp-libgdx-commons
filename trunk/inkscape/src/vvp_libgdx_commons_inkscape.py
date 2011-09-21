@@ -12,8 +12,10 @@ def showAllBodies(document):
 	setOpacityToAll(document, 1)
 			
 def setOpacityToAll(document, opacity):
-	for node in document.xpath('//svg:path[@vvpType=\'Body\']', namespaces=inkex.NSS):
-		setStyle(node, 'opacity', str(opacity))
+	for node in document.xpath('//svg:path/@vvpType', namespaces=inkex.NSS):
+		vvpType = str(node.get('vvpType'));
+		if vvpType != '' and vvpType != 'void':
+			setStyle(node, 'opacity', str(opacity))
 			
 def setStyle(node, key, value):
 	style = parseStyle(node.get('style'))
@@ -76,6 +78,28 @@ def avgPoint(points):
 		n += 1
 		
 	return [x/n, y/n]
+
+def getAllFloats(value):
+	reDec = re.compile(r"[-]?\d+([.]\d+)?")
+		
+	ret = []
+		
+	for match in reDec.finiter(value):
+		ret.append(float(match.group()))
+			
+	return ret
+
+class JointType:
+	Unknown="Unknown"
+	RevoluteJoint="RevoluteJoint"
+	PrismaticJoint="PrismaticJoint"
+	DistanceJoint="DistanceJoint"
+	PulleyJoint="PulleyJoint"
+	MouseJoint="MouseJoint"
+	GearJoint="GearJoint"
+	LineJoint="LineJoint"
+	WeldJoint="WeldJoint"
+	FrictionJoint="FrictionJoint"
 	
 class DefXml:
 	rootElement = dom.Element("vvp_libgdx_file")
@@ -103,12 +127,19 @@ class DefXml:
 		
 		return pointElement
 	
-	def addRevoluteJoint(self, idBody1, idBody2, point1, point2):
+	def addRevoluteJoint(self, idBody1, idBody2, point1, point2, limits):
 		jointElement = self.createJoint()
 		
-		jointElement.setAttribute('type', 'Revolute')
+		jointElement.setAttribute('type', JointType.RevoluteJoint)
 		jointElement.appendChild(self.createPoint(point2, idBody2))
 		jointElement.appendChild(self.createPoint(point1, idBody1))
+		
+		if limits != '':
+			limits = getAllFloats(limits)
+			if len(limits) == 2:
+				limitElement = dom.Element("limit")
+				limitElement.setAttribute('lower', str(limits[0]))
+				limitElement.setAttribute('upper', str(limits[1]))
 		
 		self.rootElement.appendChild(jointElement)
 	
@@ -183,6 +214,7 @@ class SvgSize:
 			ret = float(match.group())
 			
 		return ret
+	
 	
 	def isValid(self):
 		if self.width > 20000 or self.height > 20000:

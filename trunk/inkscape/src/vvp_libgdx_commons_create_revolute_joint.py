@@ -2,9 +2,9 @@
 
 
 # We will use the inkex module with the predefined Effect base class.
-import inkex, sys
+import inkex, sys, math
 from lxml import etree
-from vvp_libgdx_commons_inkscape import getPoints, avgPoint
+from vvp_libgdx_commons_inkscape import getPoints, avgPoint, JointType
 
 class CreateRevoluteJoint(inkex.Effect):
 	"""
@@ -15,6 +15,21 @@ class CreateRevoluteJoint(inkex.Effect):
 
 		# Call the base class constructor.
 		inkex.Effect.__init__(self)
+		
+		self.OptionParser.add_option("--limit",
+            action="store", type="inkbool", 
+            dest="limit", default=False,
+            help="enable Limit")
+		
+		self.OptionParser.add_option("--upper",
+			action="store", type="inkbool", 
+			dest="upper", default=0.0,
+			help="Upper Limit angle")
+		
+		self.OptionParser.add_option("--lower",
+			action="store", type="inkbool", 
+			dest="lower", default=0.0,
+			help="Lower Limit angle")
 		
 	def createMarker(self):
 		
@@ -40,14 +55,33 @@ class CreateRevoluteJoint(inkex.Effect):
 		svg_uri = u'http://www.w3.org/2000/svg'
 		line = etree.Element('{%s}%s' % (svg_uri,'path'))
 		
+		if self.options.limit:
+			limits = self.getLimitAngles()
+			line.set('limit', '%s,%s' %(str(limits[0]), str(limits[1])))
+			
+		
 		line.set('d', 'M%f %fL%f %f' %(point1[0], point1[1], point2[0], point2[1]))
-		line.set('vvpType', 'RevoluteJoint')
+		line.set('vvpType', JointType.RevoluteJoint)
 		line.set('body1', str(id1))
 		line.set('body2', str(id2))
 		line.set('style', 'fill:none;stroke:#000ff0;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-start:url(#CircleMarker);marker-end:url(#CircleMarker);stroke-miterlimit:4;stroke-dasharray:3,3;stroke-dashoffset:0')
 		
 		
 		return line
+	
+	def normalizeAngle(self, angle):
+		while angle <= -180.0:
+			angle += 360.0
+			
+		return angle / 180.0 * math.pi 
+			
+		
+	
+	def getLimitAngles(self):
+		upperAngle = self.normalizeAngle(self.options.upper)
+		lowerAngle = self.normalizeAngle(self.options.lower)
+		
+		return [lowerAngle, upperAngle]
 
 	def effect(self):
 		if(len(self.selected) == 2):
