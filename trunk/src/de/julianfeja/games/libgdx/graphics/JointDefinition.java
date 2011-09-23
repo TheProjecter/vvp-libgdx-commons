@@ -14,6 +14,8 @@ public class JointDefinition {
 
 	protected JointType type;
 
+	protected Vector2 limits = null;
+
 	public JointDefinition(String id, String idBody1, String idBody2,
 			Vector2 point1, Vector2 point2, JointType type) {
 		this.id = id;
@@ -56,5 +58,14 @@ public class JointDefinition {
 
 	public JointType getType() {
 		return this.type;
+	}
+
+	public Vector2 getLimits() {
+		return this.limits;
+	}
+
+	public void setLimits(Vector2 limits) {
+		this.limits = limits;
+
 	}
 }

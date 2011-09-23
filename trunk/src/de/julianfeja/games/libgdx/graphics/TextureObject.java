@@ -21,6 +21,7 @@ public abstract class TextureObject {
 	protected Rectangle rect;
 	protected Vector2 dimension;
 	protected int meshMode = GL10.GL_TRIANGLES;
+	protected float density = 1.0f;
 
 	public TextureObject(Pixmap pixmap, Rectangle rect) {
 		texture = TextureManager.instance().createTexture(assetPath, pixmap);
@@ -34,6 +35,7 @@ public abstract class TextureObject {
 	public TextureObject(TextureObject other, Array<Vector2> outline) {
 		texture = other.getTexture();
 		this.dimension = other.getDimension();
+		this.density = other.getDensity();
 
 		this.rect = other.getRect();
 
@@ -50,6 +52,12 @@ public abstract class TextureObject {
 		}
 
 		trimRectangle(outline);
+	}
+
+	public TextureObject setDensity(float density) {
+		this.density = density;
+
+		return this;
 	}
 
 	public int getMeshMode() {
@@ -78,6 +86,10 @@ public abstract class TextureObject {
 
 	public Vector2 getDimension() {
 		return dimension;
+	}
+
+	public float getDensity() {
+		return this.density;
 	}
 
 	protected void trimRectangle(Array<Vector2> outline) {
