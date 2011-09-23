@@ -22,12 +22,12 @@ class CreateRevoluteJoint(inkex.Effect):
             help="enable Limit")
 		
 		self.OptionParser.add_option("--upper",
-			action="store", type="inkbool", 
+			action="store", type="float", 
 			dest="upper", default=0.0,
 			help="Upper Limit angle")
 		
 		self.OptionParser.add_option("--lower",
-			action="store", type="inkbool", 
+			action="store", type="float", 
 			dest="lower", default=0.0,
 			help="Lower Limit angle")
 		
@@ -97,6 +97,21 @@ class CreateRevoluteJoint(inkex.Effect):
 				
 				self.current_layer.append(line)
 				return
+		elif len(self.selected) == 1:
+			id1, node1 = self.selected.items()[0]
+			
+			if node1.get('vvpType') == JointType.RevoluteJoint:
+				if self.options.limit:
+					limits = self.getLimitAngles()
+					node1.set('limit', '%s,%s' %(str(limits[0]), str(limits[1])))
+				else:
+					node1.pop('limit')
+			
+			return
+					
+				
+			
+			
 
 		sys.stderr.write("You have to select exactly two bodys.")
 

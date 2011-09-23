@@ -97,26 +97,30 @@ class ExportBody(inkex.Effect):
 		
 		defXml = DefXml()
 		
-		for idNum in self.document.xpath('//svg:path[@vvpType=\'Body\']/@id', namespaces=inkex.NSS):
+		for node in self.document.xpath('//svg:path[@vvpType=\'Body\']', namespaces=inkex.NSS):
+			idNum = node.get('id')
+			density = node.get('density')
+			d = node.get('d')
 			
-			result = self.xpathSingle('//svg:path[@id=\'' + str(idNum) + '\']/@d')
+			points = getPoints(d)
 			
-			points = getPoints(result)
-				
-			defXml.addBody(str(idNum), points)
+			params = {}
+			params['density'] = density
+			defXml.addBody(str(idNum), points, params)
 			
 		for node in self.document.xpath('//svg:path[@vvpType=\'%s\']' %JointType.RevoluteJoint, namespaces=inkex.NSS):
 			d = node.get('d')
 			idNum = node.get('id')
 			idBody1 = node.get('body1')
 			idBody2 = node.get('body2')
+			limit = node.get('limit')
 			
 			points = getPoints(d)
 			
 			if len(points) >= 2:
 				point1 = points[0]
 				point2 = points[len(points) - 1]
-				defXml.addRevoluteJoint(idBody1, idBody2, point1, point2)
+				defXml.addRevoluteJoint(idBody1, idBody2, point1, point2, limit)
 			
 			
 		return defXml.toXml()
