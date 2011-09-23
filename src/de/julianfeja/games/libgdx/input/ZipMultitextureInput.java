@@ -14,17 +14,19 @@ import org.dom4j.io.SAXReader;
 
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.JointDef.JointType;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 
 import daniel.weck.BayazitDecomposer;
+import de.julianfeja.games.libgdx.graphics.BodyDefinition;
 import de.julianfeja.games.libgdx.graphics.BoxBodyTexture;
 import de.julianfeja.games.libgdx.graphics.JointDefinition;
 import de.julianfeja.games.libgdx.graphics.PhysicsObjectGroup;
 
 public class ZipMultitextureInput extends ZipInput {
 	protected Pixmap pixmap;
-	protected Map<String, Array<Vector2>> outlines;
+	protected Map<String, BodyDefinition> bodyDefs;
 
 	protected Array<JointDefinition> jointDefs;
 
@@ -42,7 +44,7 @@ public class ZipMultitextureInput extends ZipInput {
 
 			Document document = reader.read(is);
 
-			outlines = parseOutlines(document);
+			bodyDefs = parseOutlines(document);
 			jointDefs = parseJoints(document);
 
 			is.close();
@@ -55,8 +57,8 @@ public class ZipMultitextureInput extends ZipInput {
 		}
 	}
 
-	protected static Map<String, Array<Vector2>> parseOutlines(Document document) {
-		Map<String, Array<Vector2>> outlines = new LinkedHashMap<String, Array<Vector2>>();
+	protected static Map<String, BodyDefinition> parseOutlines(Document document) {
+		Map<String, BodyDefinition> bodyDefs = new LinkedHashMap<String, BodyDefinition>();
 
 		@SuppressWarnings("rawtypes")
 		List bodys = document.selectNodes("//body");
@@ -65,6 +67,12 @@ public class ZipMultitextureInput extends ZipInput {
 			Node bodyNode = (Node) bodyObject;
 
 			String id = bodyNode.valueOf("@id");
+			float density = bodyNode.numberValueOf("@density").floatValue();
+
+			if (Float.isNaN(density)) {
+				density = 1.0f;
+			}
+
 			Array<Vector2> outline = new Array<Vector2>();
 
 			@SuppressWarnings("rawtypes")
@@ -80,10 +88,10 @@ public class ZipMultitextureInput extends ZipInput {
 				outline.reverse();
 			}
 
-			outlines.put(id, outline);
+			bodyDefs.put(id, new BodyDefinition(id, outline, density));
 		}
 
-		return outlines;
+		return bodyDefs;
 	}
 
 	protected static Vector2 parsePoint(Node node) {
@@ -118,8 +126,25 @@ public class ZipMultitextureInput extends ZipInput {
 				Vector2 point1 = parsePoint(pointNode1);
 				Vector2 point2 = parsePoint(pointNode2);
 
-				jointDefs.add(new JointDefinition(id, idBody1, idBody2, point1,
-						point2, type));
+				JointDefinition jd = new JointDefinition(id, idBody1, idBody2,
+						point1, point2, type);
+
+				if (jd.getType() == JointType.RevoluteJoint) {
+					@SuppressWarnings("unchecked")
+					List<JointDefinition> limits = jointNode
+							.selectNodes("./limit");
+
+					if (limits.size() > 0) {
+						Node limitNode = (Node) limits.get(0);
+						Vector2 limit = new Vector2(limitNode.numberValueOf(
+								"@lower").floatValue(), limitNode
+								.numberValueOf("@upper").floatValue());
+
+						jd.setLimits(limit);
+					}
+				}
+
+				jointDefs.add(jd);
 			}
 		}
 
@@ -128,13 +153,13 @@ public class ZipMultitextureInput extends ZipInput {
 
 	public PhysicsObjectGroup createGroup(int index, Vector2 position,
 			Vector2 scale, World world) {
-		Map<String, Array<Vector2>> bodys = new LinkedHashMap<String, Array<Vector2>>();
+		Map<String, BodyDefinition> bodys = new LinkedHashMap<String, BodyDefinition>();
 		Array<JointDefinition> joints = new Array<JointDefinition>();
 
 		JointDefinition rootJoint = jointDefs.get(index);
 
-		bodys.put(rootJoint.getIdBody1(), outlines.get(rootJoint.getIdBody1()));
-		bodys.put(rootJoint.getIdBody2(), outlines.get(rootJoint.getIdBody2()));
+		bodys.put(rootJoint.getIdBody1(), bodyDefs.get(rootJoint.getIdBody1()));
+		bodys.put(rootJoint.getIdBody2(), bodyDefs.get(rootJoint.getIdBody2()));
 
 		for (int i = 0; i < jointDefs.size; i++) {
 			JointDefinition jointDef = jointDefs.get(i);
@@ -146,11 +171,11 @@ public class ZipMultitextureInput extends ZipInput {
 
 					if (!bodys.containsKey(jointDef.getIdBody1()))
 						bodys.put(jointDef.getIdBody1(),
-								outlines.get(jointDef.getIdBody1()));
+								bodyDefs.get(jointDef.getIdBody1()));
 
 					if (!bodys.containsKey(jointDef.getIdBody2()))
 						bodys.put(jointDef.getIdBody2(),
-								outlines.get(jointDef.getIdBody2()));
+								bodyDefs.get(jointDef.getIdBody2()));
 
 					i = 0;
 				}
@@ -176,8 +201,9 @@ public class ZipMultitextureInput extends ZipInput {
 	}
 
 	public Array<Vector2> getOutline(int index) {
-		if (index >= 0 && index < outlines.size()) {
-			return new ArrayList<Array<Vector2>>(outlines.values()).get(index);
+		if (index >= 0 && index < bodyDefs.size()) {
+			return new ArrayList<BodyDefinition>(bodyDefs.values()).get(index)
+					.getOutline();
 		} else {
 			return null;
 		}

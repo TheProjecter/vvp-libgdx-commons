@@ -18,7 +18,7 @@ public class PhysicsObjectGroup extends GeometricObject implements Physical {
 	protected TextureObject textureObject;
 
 	public PhysicsObjectGroup(Vector2 position, Vector2 scale,
-			Map<String, Array<Vector2>> outlines,
+			Map<String, BodyDefinition> bodyDefs,
 			Array<JointDefinition> jointDefs, TextureObject textureObject,
 			World world) {
 		super(position, scale);
@@ -27,12 +27,12 @@ public class PhysicsObjectGroup extends GeometricObject implements Physical {
 		this.world = world;
 
 		for (JointDefinition jointDef : jointDefs) {
-			addJoint(jointDef, outlines);
+			addJoint(jointDef, bodyDefs);
 		}
 	}
 
 	protected void addJoint(JointDefinition jointDef,
-			Map<String, Array<Vector2>> outlines) {
+			Map<String, BodyDefinition> bodyDefs) {
 		String idBody1 = jointDef.getIdBody1();
 		String idBody2 = jointDef.getIdBody2();
 
@@ -68,10 +68,10 @@ public class PhysicsObjectGroup extends GeometricObject implements Physical {
 		}
 
 		if (physicsObject1 == null) {
-			physicsObject1 = addBody(idBody1, outlines.get(idBody1), pos1);
+			physicsObject1 = addBody(idBody1, bodyDefs.get(idBody1), pos1);
 		}
 		if (physicsObject2 == null) {
-			physicsObject2 = addBody(idBody2, outlines.get(idBody2), pos2);
+			physicsObject2 = addBody(idBody2, bodyDefs.get(idBody2), pos2);
 		}
 
 		center = jointDef.getPoint2();
@@ -83,15 +83,25 @@ public class PhysicsObjectGroup extends GeometricObject implements Physical {
 		jd.initialize(physicsObject1.getBody(), physicsObject2.getBody(),
 				center);
 		jd.collideConnected = false;
+		jd.enableMotor = true;
+		jd.motorSpeed = 0f;
+		jd.maxMotorTorque = 25000f;
+
+		if (jointDef.getLimits() != null) {
+			jd.enableLimit = true;
+			jd.lowerAngle = jointDef.getLimits().x;
+			jd.upperAngle = jointDef.getLimits().y;
+		}
 
 		world.createJoint(jd);
 	}
 
-	protected PhysicsObject addBody(String key, Array<Vector2> outline,
+	protected PhysicsObject addBody(String key, BodyDefinition bodyDef,
 			Vector2 pos) {
 		PhysicsObject physicsObject = new TexturedMeshPhysicsObject(pos,
 				this.scale, new SimpleOutlinedTextureObject(textureObject,
-						outline), world);
+						bodyDef.getOutline()).setDensity(bodyDef.getDensity()),
+				world);
 
 		physicsObjects.put(key, physicsObject);
 

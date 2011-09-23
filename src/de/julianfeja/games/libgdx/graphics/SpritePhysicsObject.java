@@ -33,23 +33,37 @@ public class SpritePhysicsObject extends PhysicsObject {
 		this(position, 1.0f, textureObject, world);
 	}
 
+	public static FixtureDef getDefaultFixtureDef(float density) {
+		FixtureDef fixtureDef = new FixtureDef();
+
+		fixtureDef.filter.groupIndex = -1; // 0 => no collision
+		// // group,negative =>
+		// // never collide, positive => always
+		// // collide
+		// fixtureDef.filter.categoryBits = 0x0001;
+		// fixtureDef.filter.maskBits = 0x0001;
+		// fixtureDef.isSensor = false;
+		// fixtureDef.restitution = 0.4f;
+		fixtureDef.density = density;
+		fixtureDef.friction = 0.5f;
+
+		return fixtureDef;
+	}
+
+	public static FixtureDef getDefaultFixtureDef() {
+		return getDefaultFixtureDef(1.0f);
+	}
+
 	@Override
 	public void createFixtures(Body body) {
 
 		for (PolygonShape bodyPoly : textureObject
 				.createPolygonShapes(dimension)) {
-			FixtureDef fixtureDef = new FixtureDef();
+
+			FixtureDef fixtureDef = getDefaultFixtureDef(textureObject
+					.getDensity());
+
 			fixtureDef.shape = bodyPoly;
-			// fixtureDef.filter.groupIndex = 1; // 0 => no collision
-			// // group,negative =>
-			// // never collide, positive => always
-			// // collide
-			// fixtureDef.filter.categoryBits = 0x0001;
-			// fixtureDef.filter.maskBits = 0x0001;
-			// fixtureDef.isSensor = false;
-			fixtureDef.restitution = 0.4f;
-			fixtureDef.density = 1.0f;
-			// fixtureDef.friction = 1.0f;
 
 			body.createFixture(fixtureDef);
 		}
