@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import inkex, cubicsuperpath, cspsubdiv, simplepath, re
+import inkex, cubicsuperpath, cspsubdiv, simplepath, re, sys
 from simplestyle import parseStyle, formatStyle
 import xml.dom.minidom as dom
 
@@ -12,7 +12,7 @@ def showAllBodies(document):
 	setOpacityToAll(document, 1)
 			
 def setOpacityToAll(document, opacity):
-	for node in document.xpath('//svg:path/@vvpType', namespaces=inkex.NSS):
+	for node in document.xpath('//svg:path[@vvpType]', namespaces=inkex.NSS):
 		vvpType = str(node.get('vvpType'));
 		if vvpType != '' and vvpType != 'void':
 			setStyle(node, 'opacity', str(opacity))
@@ -84,7 +84,7 @@ def getAllFloats(value):
 		
 	ret = []
 		
-	for match in reDec.finiter(value):
+	for match in reDec.finditer(str(value)):
 		ret.append(float(match.group()))
 			
 	return ret
@@ -107,9 +107,13 @@ class DefXml:
 	def toXml(self):
 		return self.rootElement.toprettyxml()
 	
-	def addBody(self, idNum, points):
+	def addBody(self, idNum, points, params):
 		bodyElement = dom.Element("body")
 		bodyElement.setAttribute("id", idNum)
+		
+		for p in params:
+			if params[p] != None:
+				bodyElement.setAttribute(p, str(params[p]))
 		
 		for point in points:
 			bodyElement.appendChild(self.createPoint(point))
@@ -134,12 +138,14 @@ class DefXml:
 		jointElement.appendChild(self.createPoint(point2, idBody2))
 		jointElement.appendChild(self.createPoint(point1, idBody1))
 		
-		if limits != '':
+		if limits != '' and limits != None:
 			limits = getAllFloats(limits)
 			if len(limits) == 2:
 				limitElement = dom.Element("limit")
 				limitElement.setAttribute('lower', str(limits[0]))
 				limitElement.setAttribute('upper', str(limits[1]))
+				
+				jointElement.appendChild(limitElement)
 		
 		self.rootElement.appendChild(jointElement)
 	

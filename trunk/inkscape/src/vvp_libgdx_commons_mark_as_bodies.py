@@ -32,6 +32,7 @@ class MarkBodies(inkex.Effect):
 				flattenPath(node, self.options.flat)
 			
 				node.set('vvpType', 'Body')
+				node.set('density', '1.0')
 				if self.options.hide:
 					node.set('style', 'fill:#d4ff2a;fill-opacity:0.4;opacity:0;stroke:#c4f700;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:6, 6;stroke-dashoffset:0')
 				else:
