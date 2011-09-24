@@ -1,8 +1,10 @@
-package de.julianfeja.games.libgdx.graphics;
+package de.julianfeja.games.libgdx.graphics.texture;
 
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
+
+import de.julianfeja.games.libgdx.graphics.Rectangle;
 
 public class BoxBodyTexture extends TextureObject {
 

@@ -1,4 +1,4 @@
-package de.julianfeja.games.libgdx.graphics;
+package de.julianfeja.games.libgdx.graphics.physical;
 
 import java.util.Iterator;
 
@@ -11,11 +11,18 @@ import com.badlogic.gdx.physics.box2d.Joint;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 
+import de.julianfeja.games.libgdx.graphics.GeometricObject;
+
 abstract public class PhysicsObject extends GeometricObject implements Physical {
 	protected Body body;
 	protected World world;
 	protected boolean active = false;
 	protected Vector2 dimension;
+
+	private static int nextColideGroup = 1;
+	private static int nextNonColideGroup = -1;
+
+	protected int groupIndex = 0;
 
 	public PhysicsObject(Vector2 position, Vector2 scale, Vector2 dimension,
 			World world) {
@@ -24,6 +31,14 @@ abstract public class PhysicsObject extends GeometricObject implements Physical 
 		this.dimension = dimension;
 		this.world = world;
 		active = true;
+	}
+
+	public static int getNextColideGroup() {
+		return nextColideGroup++;
+	}
+
+	public static int getNextNonColideGroup() {
+		return nextNonColideGroup--;
 	}
 
 	@Override

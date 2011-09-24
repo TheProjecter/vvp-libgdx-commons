@@ -19,10 +19,10 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 
 import daniel.weck.BayazitDecomposer;
-import de.julianfeja.games.libgdx.graphics.BodyDefinition;
-import de.julianfeja.games.libgdx.graphics.BoxBodyTexture;
-import de.julianfeja.games.libgdx.graphics.JointDefinition;
-import de.julianfeja.games.libgdx.graphics.PhysicsObjectGroup;
+import de.julianfeja.games.libgdx.graphics.defs.BodyDefinition;
+import de.julianfeja.games.libgdx.graphics.defs.JointDefinition;
+import de.julianfeja.games.libgdx.graphics.physical.PhysicsObjectGroup;
+import de.julianfeja.games.libgdx.graphics.texture.BoxBodyTexture;
 
 public class ZipMultitextureInput extends ZipInput {
 	protected Pixmap pixmap;

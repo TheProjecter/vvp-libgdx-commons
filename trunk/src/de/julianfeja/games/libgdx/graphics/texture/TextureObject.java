@@ -1,4 +1,4 @@
-package de.julianfeja.games.libgdx.graphics;
+package de.julianfeja.games.libgdx.graphics.texture;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL10;
@@ -12,6 +12,8 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.utils.Array;
 
 import daniel.weck.BayazitDecomposer;
+import de.julianfeja.games.libgdx.graphics.GeometricObject;
+import de.julianfeja.games.libgdx.graphics.Rectangle;
 
 public abstract class TextureObject {
 	protected String assetPath;

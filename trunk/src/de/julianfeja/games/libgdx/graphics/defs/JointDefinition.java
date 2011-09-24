@@ -1,7 +1,9 @@
-package de.julianfeja.games.libgdx.graphics;
+package de.julianfeja.games.libgdx.graphics.defs;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.JointDef.JointType;
+
+import de.julianfeja.games.libgdx.graphics.GeometricObject;
 
 public class JointDefinition {
 	protected String id;
@@ -48,12 +50,12 @@ public class JointDefinition {
 		return this.idBody2;
 	}
 
-	public Vector2 getPoint1() {
-		return this.point1.cpy();
+	public Vector2 getPoint1(Vector2 scale) {
+		return new Vector2(point1.x * scale.x, point1.y * scale.y);
 	}
 
-	public Vector2 getPoint2() {
-		return this.point2.cpy();
+	public Vector2 getPoint2(Vector2 scale) {
+		return new Vector2(point2.x * scale.x, point2.y * scale.y);
 	}
 
 	public JointType getType() {
