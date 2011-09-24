@@ -1,4 +1,4 @@
-package de.julianfeja.games.libgdx.graphics;
+package de.julianfeja.games.libgdx.graphics.physical;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL10;
@@ -8,6 +8,8 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
+
+import de.julianfeja.games.libgdx.graphics.texture.TextureObject;
 
 public class TexturedMeshPhysicsObject extends SpritePhysicsObject {
 
@@ -60,8 +62,8 @@ public class TexturedMeshPhysicsObject extends SpritePhysicsObject {
 		gl.glTranslatef(body.getPosition().x, body.getPosition().y, 0);
 
 		gl.glRotatef(body.getAngle() * MathUtils.radiansToDegrees, 0, 0, 1);
-		gl.glScalef(dimension.x / textureObject.texture.getWidth(),
-				-dimension.y / textureObject.texture.getHeight(), 1f);
+		gl.glScalef(dimension.x / textureObject.getTexture().getWidth(),
+				-dimension.y / textureObject.getTexture().getHeight(), 1f);
 
 		Mesh mesh = textureObject.getMesh();
 

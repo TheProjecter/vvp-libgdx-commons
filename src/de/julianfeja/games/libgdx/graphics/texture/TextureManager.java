@@ -1,4 +1,4 @@
-package de.julianfeja.games.libgdx.graphics;
+package de.julianfeja.games.libgdx.graphics.texture;
 
 import java.util.HashMap;
 import java.util.Map;

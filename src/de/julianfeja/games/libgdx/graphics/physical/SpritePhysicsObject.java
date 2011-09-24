@@ -1,4 +1,4 @@
-package de.julianfeja.games.libgdx.graphics;
+package de.julianfeja.games.libgdx.graphics.physical;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -8,6 +8,10 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
+
+import de.julianfeja.games.libgdx.graphics.GeometricObject;
+import de.julianfeja.games.libgdx.graphics.Rectangle;
+import de.julianfeja.games.libgdx.graphics.texture.TextureObject;
 
 public class SpritePhysicsObject extends PhysicsObject {
 	protected TextureObject textureObject;

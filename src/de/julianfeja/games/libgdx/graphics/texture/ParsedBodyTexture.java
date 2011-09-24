@@ -1,4 +1,4 @@
-package de.julianfeja.games.libgdx.graphics;
+package de.julianfeja.games.libgdx.graphics.texture;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Pixmap;
@@ -7,6 +7,7 @@ import com.badlogic.gdx.utils.Array;
 
 import daniel.weck.BayazitDecomposer;
 import daniel.weck.TextureConverter;
+import de.julianfeja.games.libgdx.graphics.Rectangle;
 
 public class ParsedBodyTexture extends TextureObject {
 

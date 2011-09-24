@@ -1,4 +1,4 @@
-package de.julianfeja.games.libgdx.graphics;
+package de.julianfeja.games.libgdx.graphics.physical;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -9,6 +9,12 @@ import com.badlogic.gdx.physics.box2d.Joint;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
 import com.badlogic.gdx.utils.Array;
+
+import de.julianfeja.games.libgdx.graphics.GeometricObject;
+import de.julianfeja.games.libgdx.graphics.defs.BodyDefinition;
+import de.julianfeja.games.libgdx.graphics.defs.JointDefinition;
+import de.julianfeja.games.libgdx.graphics.texture.SimpleOutlinedTextureObject;
+import de.julianfeja.games.libgdx.graphics.texture.TextureObject;
 
 public class PhysicsObjectGroup extends GeometricObject implements Physical {
 	protected Map<String, Joint> joints = new LinkedHashMap<String, Joint>();
@@ -45,24 +51,26 @@ public class PhysicsObjectGroup extends GeometricObject implements Physical {
 
 		if (physicsObjects.containsKey(idBody1)) {
 			physicsObject1 = physicsObjects.get(idBody1);
-			pos1 = physicsObject1.position;
+			pos1 = physicsObject1.getPosition();
 		}
 
 		if (physicsObjects.containsKey(idBody2)) {
 			physicsObject2 = physicsObjects.get(idBody2);
-			pos2 = physicsObject2.position;
+			pos2 = physicsObject2.getPosition();
 		}
 
 		if (pos1 == null && pos2 == null) {
 			pos1 = position.cpy();
 		} else if (pos1 == null) {
-			pos1 = jointDef.getPoint1().sub(jointDef.getPoint2())
+			pos1 = jointDef.getPoint1(this.scale)
+					.sub(jointDef.getPoint2(this.scale))
 					.add(new Vector2(-pos2.x, pos2.y));
 			pos1.x *= -1;
 		}
 
 		if (pos2 == null) {
-			pos2 = jointDef.getPoint2().sub(jointDef.getPoint1())
+			pos2 = jointDef.getPoint2(this.scale)
+					.sub(jointDef.getPoint1(this.scale))
 					.add(new Vector2(-pos1.x, pos1.y));
 			pos2.x *= -1;
 		}
@@ -74,7 +82,7 @@ public class PhysicsObjectGroup extends GeometricObject implements Physical {
 			physicsObject2 = addBody(idBody2, bodyDefs.get(idBody2), pos2);
 		}
 
-		center = jointDef.getPoint2();
+		center = jointDef.getPoint2(this.scale);
 		center.y *= -1;
 		center.add(pos2);
 
@@ -85,7 +93,8 @@ public class PhysicsObjectGroup extends GeometricObject implements Physical {
 		jd.collideConnected = false;
 		jd.enableMotor = true;
 		jd.motorSpeed = 0f;
-		jd.maxMotorTorque = 25000f;
+
+		jd.maxMotorTorque = 25000f * scale.x * scale.y * scale.y;
 
 		if (jointDef.getLimits() != null) {
 			jd.enableLimit = true;
