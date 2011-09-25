@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 
-import inkex, cubicsuperpath, cspsubdiv, simplepath, re, sys
+import inkex, cubicsuperpath, cspsubdiv, simplepath, re
 from simplestyle import parseStyle, formatStyle
 import xml.dom.minidom as dom
+import math
 
 
 def hideAllBodies(document):
@@ -89,6 +90,12 @@ def getAllFloats(value):
 			
 	return ret
 
+def normalizeAngle(self, angle):
+	while angle <= -180.0:
+		angle += 360.0
+			
+	return angle / 180.0 * math.pi 
+
 class JointType:
 	Unknown="Unknown"
 	RevoluteJoint="RevoluteJoint"
@@ -131,7 +138,7 @@ class DefXml:
 		
 		return pointElement
 	
-	def addRevoluteJoint(self, idBody1, idBody2, point1, point2, limits):
+	def addRevoluteJoint(self, idBody1, idBody2, point1, point2, limits, motor):
 		jointElement = self.createJoint()
 		
 		jointElement.setAttribute('type', JointType.RevoluteJoint)
@@ -146,6 +153,15 @@ class DefXml:
 				limitElement.setAttribute('upper', str(limits[1]))
 				
 				jointElement.appendChild(limitElement)
+				
+		if motor != '' and motor != None:
+			motor = getAllFloats(motor)
+			if len(motor) == 2:
+				motorElement = dom.Element("motor")
+				motorElement.setAttribute("motorSpeed", str(motor[0]))
+				motorElement.setAttribute("maxMotorTorque", str(motor[1]))
+				
+				jointElement.appendChild(motorElement)
 		
 		self.rootElement.appendChild(jointElement)
 	

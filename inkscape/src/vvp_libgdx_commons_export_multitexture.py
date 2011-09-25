@@ -2,7 +2,7 @@
 
 
 # We will use the inkex module with the predefined Effect base class.
-import inkex, tempfile, os, zipfile, sys, shutil, re
+import inkex, tempfile, os, zipfile, sys, shutil
 
 from vvp_libgdx_commons_inkscape import SvgSize, DefXml, getPoints, JointType
 
@@ -85,9 +85,8 @@ class ExportBody(inkex.Effect):
 		command = "inkscape -a %s:%s:%s:%s -e \"%s\" \"%s\" " % (0, 0, self.size.width, self.size.height, filename, svg_file)
 
 		p = Popen(command, shell=True, stdout=PIPE, stderr=PIPE)
-		return_code = p.wait()
+		p.wait()
 		f = p.stdout
-		err = p.stderr
 
 		f.close()	
 		
@@ -114,13 +113,14 @@ class ExportBody(inkex.Effect):
 			idBody1 = node.get('body1')
 			idBody2 = node.get('body2')
 			limit = node.get('limit')
+			motor = node.get('motor')
 			
 			points = getPoints(d)
 			
 			if len(points) >= 2:
 				point1 = points[0]
 				point2 = points[len(points) - 1]
-				defXml.addRevoluteJoint(idBody1, idBody2, point1, point2, limit)
+				defXml.addRevoluteJoint(idBody1, idBody2, point1, point2, limit, motor)
 			
 			
 		return defXml.toXml()
