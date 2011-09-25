@@ -8,6 +8,9 @@
   <param name="limit" type="boolean" _gui-text="enable Limit">false</param>
   <param name="upper" type="float" min="0.0" max="360.0" _gui-text="upper limit angle">0.0</param>
   <param name="lower" type="float" min="-360.0" max="0.0" _gui-text="lower limit angle">0.0</param>
+  <param name="motor" type="boolean" _gui-text="enable motor">false</param>
+  <param name="motorSpeed" type="float" min="-100000000.0" max="100000000.0" _gui-text="motorSpeed">0.0</param>
+  <param name="maxMotorTorque" type="float" min="0.0" max="100000000.0" _gui-text="maxMotorTorque">0.0</param>
   <effect>
     <object-type>all</object-type>
     <effects-menu>

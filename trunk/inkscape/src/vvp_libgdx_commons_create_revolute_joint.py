@@ -2,9 +2,10 @@
 
 
 # We will use the inkex module with the predefined Effect base class.
-import inkex, sys, math
+import inkex, sys
 from lxml import etree
-from vvp_libgdx_commons_inkscape import getPoints, avgPoint, JointType
+from vvp_libgdx_commons_inkscape import getPoints, avgPoint, JointType,\
+	normalizeAngle
 
 class CreateRevoluteJoint(inkex.Effect):
 	"""
@@ -31,6 +32,21 @@ class CreateRevoluteJoint(inkex.Effect):
 			dest="lower", default=0.0,
 			help="Lower Limit angle")
 		
+		self.OptionParser.add_option("--motor",
+            action="store", type="inkbool", 
+            dest="motor", default=False,
+            help="enable motor")
+		
+		self.OptionParser.add_option("--motorSpeed",
+			action="store", type="float", 
+			dest="motorSpeed", default=0.0,
+			help="motorSpeed")
+		
+		self.OptionParser.add_option("--maxMotorTorque",
+			action="store", type="float", 
+			dest="maxMotorTorque", default=0.0,
+			help="maxMotorTorque")
+		
 	def createMarker(self):
 		
 		if(len(self.document.xpath('//svg:marker[@id=\'CircleMarker\']', namespaces=inkex.NSS))==0):
@@ -55,9 +71,7 @@ class CreateRevoluteJoint(inkex.Effect):
 		svg_uri = u'http://www.w3.org/2000/svg'
 		line = etree.Element('{%s}%s' % (svg_uri,'path'))
 		
-		if self.options.limit:
-			limits = self.getLimitAngles()
-			line.set('limit', '%s,%s' %(str(limits[0]), str(limits[1])))
+		self.setParams(line)
 			
 		
 		line.set('d', 'M%f %fL%f %f' %(point1[0], point1[1], point2[0], point2[1]))
@@ -68,18 +82,19 @@ class CreateRevoluteJoint(inkex.Effect):
 		
 		
 		return line
-	
-	def normalizeAngle(self, angle):
-		while angle <= -180.0:
-			angle += 360.0
 			
-		return angle / 180.0 * math.pi 
+	def setParams(self, node):
+		if self.options.limit:
+			limits = self.getLimitAngles()
+			node.set('limit', '%s,%s' %(str(limits[0]), str(limits[1])))
 			
+		if self.options.motor:
+			node.set('motor', '%s,%s' %(str(self.options.motorSpeed), str(self.options.maxMotorTorque)))
 		
 	
 	def getLimitAngles(self):
-		upperAngle = self.normalizeAngle(self.options.upper)
-		lowerAngle = self.normalizeAngle(self.options.lower)
+		upperAngle = normalizeAngle(self.options.upper)
+		lowerAngle = normalizeAngle(self.options.lower)
 		
 		return [lowerAngle, upperAngle]
 
@@ -101,13 +116,9 @@ class CreateRevoluteJoint(inkex.Effect):
 			id1, node1 = self.selected.items()[0]
 			
 			if node1.get('vvpType') == JointType.RevoluteJoint:
-				if self.options.limit:
-					limits = self.getLimitAngles()
-					node1.set('limit', '%s,%s' %(str(limits[0]), str(limits[1])))
-				else:
-					node1.pop('limit')
-			
-			return
+				self.setParams()
+				
+				return
 					
 				
 			
