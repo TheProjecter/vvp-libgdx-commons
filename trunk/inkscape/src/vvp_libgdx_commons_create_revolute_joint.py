@@ -5,7 +5,7 @@
 import inkex, sys
 from lxml import etree
 from vvp_libgdx_commons_inkscape import getPoints, avgPoint, JointType,\
-	normalizeAngle
+	normalizeAngle, createCircleMarker
 
 class CreateRevoluteJoint(inkex.Effect):
 	"""
@@ -47,26 +47,8 @@ class CreateRevoluteJoint(inkex.Effect):
 			dest="maxMotorTorque", default=0.0,
 			help="maxMotorTorque")
 		
-	def createMarker(self):
-		
-		if(len(self.document.xpath('//svg:marker[@id=\'CircleMarker\']', namespaces=inkex.NSS))==0):
-			svg_uri = u'http://www.w3.org/2000/svg'
-			marker = etree.Element('{%s}%s' % (svg_uri,'marker'))
-			marker.set('id', 'CircleMarker')
-		
-			path = etree.Element('{%s}%s' % (svg_uri,'path'))
-			path.set('d', 'M -2.5,-1.0 C -2.5,1.7600000 -4.7400000,4.0 -7.5,4.0 C -10.260000,4.0 -12.5,1.7600000 -12.5,-1.0 C -12.5,-3.7600000 -10.260000,-6.0 -7.5,-6.0 C -4.7400000,-6.0 -2.5,-3.7600000 -2.5,-1.0 z ')
-			path.set('style', 'fill-rule:evenodd;stroke:#000000;stroke-width:1.0pt')
-			path.set('transform', 'scale(0.8) translate(7.4, 1)')
-		
-			marker.insert(0, path)
-		
-			defs = self.xpathSingle('//svg:defs')
-			
-			defs.insert(0, marker)
-		
 	def createRevoluteJointLine(self, id1, id2, point1, point2):
-		self.createMarker()
+		createCircleMarker(self)
 		
 		svg_uri = u'http://www.w3.org/2000/svg'
 		line = etree.Element('{%s}%s' % (svg_uri,'path'))

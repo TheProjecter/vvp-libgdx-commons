@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE inx SYSTEM "inx.dtd">
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
   <_name>Show all Bodies</_name>
   <id>de.julianfeja.games.libgdx.inkscape.extensions.showallbodies</id>
