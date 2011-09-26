@@ -4,7 +4,8 @@
 # We will use the inkex module with the predefined Effect base class.
 import inkex, sys
 from lxml import etree
-from vvp_libgdx_commons_inkscape import getPoints, avgPoint, JointType
+from vvp_libgdx_commons_inkscape import getPoints, avgPoint, JointType,\
+	createDiamondMarker
 
 class CreateDistanceJoint(inkex.Effect):
 	"""
@@ -31,26 +32,9 @@ class CreateDistanceJoint(inkex.Effect):
             dest="frequencyHz", default=0.0,
             help="frequencyHz")
 		
-	def createMarker(self):
-		
-		if(len(self.document.xpath('//svg:marker[@id=\'DiamondMarker\']', namespaces=inkex.NSS))==0):
-			svg_uri = u'http://www.w3.org/2000/svg'
-			marker = etree.Element('{%s}%s' % (svg_uri,'marker'))
-			marker.set('id', 'DiamondMarker')
-		
-			path = etree.Element('{%s}%s' % (svg_uri,'path'))
-			path.set('d', 'M 0,-7.0710768 L -7.0710894,0 L 0,7.0710589 L 7.0710462,0 L 0,-7.0710768 z')
-			path.set('style', 'fill-rule:evenodd;stroke:#000000;stroke-width:1.0pt')
-			path.set('transform', 'scale(0.4)')
-		
-			marker.insert(0, path)
-		
-			defs = self.xpathSingle('//svg:defs')
-			
-			defs.insert(0, marker)
 		
 	def createDistanceJointLine(self, id1, id2, point1, point2):
-		self.createMarker()
+		createDiamondMarker(self)
 		
 		svg_uri = u'http://www.w3.org/2000/svg'
 		line = etree.Element('{%s}%s' % (svg_uri,'path'))

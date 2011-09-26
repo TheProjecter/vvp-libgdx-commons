@@ -4,6 +4,7 @@ import inkex, cubicsuperpath, cspsubdiv, simplepath, re
 from simplestyle import parseStyle, formatStyle
 import xml.dom.minidom as dom
 import math
+from lxml import etree
 
 
 def hideAllBodies(document):
@@ -102,6 +103,44 @@ def getParams(node, keyList):
 		ret[str(key)] = node.get(str(key))
 		
 	return ret
+
+
+def createCircleMarker(this):
+		
+	if(len(this.document.xpath('//svg:marker[@id=\'CircleMarker\']', namespaces=inkex.NSS))==0):
+		svg_uri = u'http://www.w3.org/2000/svg'
+		marker = etree.Element('{%s}%s' % (svg_uri,'marker'))
+		marker.set('id', 'CircleMarker')
+	
+		path = etree.Element('{%s}%s' % (svg_uri,'path'))
+		path.set('d', 'M -2.5,-1.0 C -2.5,1.7600000 -4.7400000,4.0 -7.5,4.0 C -10.260000,4.0 -12.5,1.7600000 -12.5,-1.0 C -12.5,-3.7600000 -10.260000,-6.0 -7.5,-6.0 C -4.7400000,-6.0 -2.5,-3.7600000 -2.5,-1.0 z ')
+		path.set('style', 'fill-rule:evenodd;stroke:#000000;stroke-width:1.0pt')
+		path.set('transform', 'scale(0.8) translate(7.4, 1)')
+		
+		marker.insert(0, path)
+	
+		defs = this.xpathSingle('//svg:defs')
+		
+		defs.insert(0, marker)
+		
+		
+def createDiamondMarker(this):
+	
+	if(len(this.document.xpath('//svg:marker[@id=\'DiamondMarker\']', namespaces=inkex.NSS))==0):
+		svg_uri = u'http://www.w3.org/2000/svg'
+		marker = etree.Element('{%s}%s' % (svg_uri,'marker'))
+		marker.set('id', 'DiamondMarker')
+		
+		path = etree.Element('{%s}%s' % (svg_uri,'path'))
+		path.set('d', 'M 0,-7.0710768 L -7.0710894,0 L 0,7.0710589 L 7.0710462,0 L 0,-7.0710768 z')
+		path.set('style', 'fill-rule:evenodd;stroke:#000000;stroke-width:1.0pt')
+		path.set('transform', 'scale(0.4)')
+		
+		marker.insert(0, path)
+		
+		defs = this.xpathSingle('//svg:defs')
+			
+		defs.insert(0, marker)
 		
 
 class JointType:
