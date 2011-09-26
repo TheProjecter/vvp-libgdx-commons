@@ -24,6 +24,7 @@ public abstract class TextureObject {
 	protected Vector2 dimension;
 	protected int meshMode = GL10.GL_TRIANGLES;
 	protected float density = 1.0f;
+	private short groupIndex = 0;
 
 	public TextureObject(Pixmap pixmap, Rectangle rect) {
 		texture = TextureManager.instance().createTexture(assetPath, pixmap);
@@ -291,6 +292,16 @@ public abstract class TextureObject {
 
 	public TextureObject getCopy(Array<Vector2> outline) {
 		return new SimpleOutlinedTextureObject(this, outline);
+	}
+
+	public short getGroupIndex() {
+		return groupIndex;
+	}
+
+	public TextureObject setGroupIndex(short groupIndex) {
+		this.groupIndex = groupIndex;
+
+		return this;
 	}
 
 }

@@ -14,8 +14,11 @@ import org.dom4j.io.SAXReader;
 
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.JointDef;
 import com.badlogic.gdx.physics.box2d.JointDef.JointType;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.physics.box2d.joints.DistanceJointDef;
+import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
 import com.badlogic.gdx.utils.Array;
 
 import daniel.weck.BayazitDecomposer;
@@ -104,8 +107,8 @@ public class ZipMultitextureInput extends ZipInput {
 	protected static Array<JointDefinition> parseJoints(Document document) {
 		Array<JointDefinition> jointDefs = new Array<JointDefinition>();
 
-		@SuppressWarnings("unchecked")
-		List<JointDefinition> joints = document.selectNodes("//joint");
+		@SuppressWarnings("rawtypes")
+		List joints = document.selectNodes("//joint");
 
 		for (Object jointObject : joints) {
 			Node jointNode = (Node) jointObject;
@@ -113,8 +116,8 @@ public class ZipMultitextureInput extends ZipInput {
 			String type = jointNode.valueOf("@type");
 			String id = jointNode.valueOf("@id");
 
-			@SuppressWarnings("unchecked")
-			List<JointDefinition> points = jointNode.selectNodes("./point");
+			@SuppressWarnings("rawtypes")
+			List points = jointNode.selectNodes("./point");
 
 			if (points.size() >= 2) {
 				Node pointNode1 = (Node) points.get(0);
@@ -126,25 +129,59 @@ public class ZipMultitextureInput extends ZipInput {
 				Vector2 point1 = parsePoint(pointNode1);
 				Vector2 point2 = parsePoint(pointNode2);
 
-				JointDefinition jd = new JointDefinition(id, idBody1, idBody2,
-						point1, point2, type);
+				JointDefinition jointDefinition;
+				JointDef jd = null;
 
-				if (jd.getType() == JointType.RevoluteJoint) {
-					@SuppressWarnings("unchecked")
-					List<JointDefinition> limits = jointNode
-							.selectNodes("./limit");
+				switch (JointType.valueOf(type)) {
+				case RevoluteJoint:
+					RevoluteJointDef rjd = new RevoluteJointDef();
+					jd = rjd;
+
+					@SuppressWarnings("rawtypes")
+					List limits = jointNode.selectNodes("./limit");
 
 					if (limits.size() > 0) {
 						Node limitNode = (Node) limits.get(0);
-						Vector2 limit = new Vector2(limitNode.numberValueOf(
-								"@lower").floatValue(), limitNode
-								.numberValueOf("@upper").floatValue());
 
-						jd.setLimits(limit);
+						rjd.lowerAngle = limitNode.numberValueOf("@lower")
+								.floatValue();
+						rjd.upperAngle = limitNode.numberValueOf("@upper")
+								.floatValue();
 					}
+
+					@SuppressWarnings("rawtypes")
+					List motors = jointNode.selectNodes("./motor");
+
+					if (motors.size() > 0) {
+						Node motorNode = (Node) motors.get(0);
+
+						rjd.motorSpeed = motorNode.numberValueOf("@motorSpeed")
+								.floatValue();
+						rjd.maxMotorTorque = motorNode.numberValueOf(
+								"@maxMotorTorque").floatValue();
+					}
+					break;
+
+				case DistanceJoint:
+					DistanceJointDef djd = new DistanceJointDef();
+					jd = djd;
+
+					djd.length = jointNode.numberValueOf("@distance")
+							.floatValue();
+					djd.dampingRatio = jointNode.numberValueOf("@dampingRatio")
+							.floatValue();
+					djd.frequencyHz = jointNode.numberValueOf("@frequencyHz")
+							.floatValue();
+
+					break;
+				default:
+					break;
 				}
 
-				jointDefs.add(jd);
+				jointDefinition = new JointDefinition(id, idBody1, idBody2,
+						point1, point2, jd);
+
+				jointDefs.add(jointDefinition);
 			}
 		}
 

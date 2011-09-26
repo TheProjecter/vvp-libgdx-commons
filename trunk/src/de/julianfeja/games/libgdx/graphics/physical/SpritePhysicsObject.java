@@ -37,10 +37,11 @@ public class SpritePhysicsObject extends PhysicsObject {
 		this(position, 1.0f, textureObject, world);
 	}
 
-	public static FixtureDef getDefaultFixtureDef(float density) {
+	public static FixtureDef getDefaultFixtureDef(float density,
+			short groupIndex) {
 		FixtureDef fixtureDef = new FixtureDef();
 
-		fixtureDef.filter.groupIndex = -1; // 0 => no collision
+		fixtureDef.filter.groupIndex = groupIndex; // 0 => no collision
 		// // group,negative =>
 		// // never collide, positive => always
 		// // collide
@@ -54,18 +55,14 @@ public class SpritePhysicsObject extends PhysicsObject {
 		return fixtureDef;
 	}
 
-	public static FixtureDef getDefaultFixtureDef() {
-		return getDefaultFixtureDef(1.0f);
-	}
-
 	@Override
 	public void createFixtures(Body body) {
 
 		for (PolygonShape bodyPoly : textureObject
 				.createPolygonShapes(dimension)) {
 
-			FixtureDef fixtureDef = getDefaultFixtureDef(textureObject
-					.getDensity());
+			FixtureDef fixtureDef = getDefaultFixtureDef(
+					textureObject.getDensity(), textureObject.getGroupIndex());
 
 			fixtureDef.shape = bodyPoly;
 
