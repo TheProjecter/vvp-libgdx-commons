@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Joint;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
 import com.badlogic.gdx.utils.Array;
 
 import de.julianfeja.games.libgdx.graphics.GeometricObject;
@@ -19,6 +18,8 @@ import de.julianfeja.games.libgdx.graphics.texture.TextureObject;
 public class PhysicsObjectGroup extends GeometricObject implements Physical {
 	protected Map<String, Joint> joints = new LinkedHashMap<String, Joint>();
 	protected Map<String, PhysicsObject> physicsObjects = new LinkedHashMap<String, PhysicsObject>();
+
+	protected short groupIndex = PhysicsObject.getNextNonColideGroup();
 
 	protected World world;
 	protected TextureObject textureObject;
@@ -86,31 +87,20 @@ public class PhysicsObjectGroup extends GeometricObject implements Physical {
 		center.y *= -1;
 		center.add(pos2);
 
-		RevoluteJointDef jd = new RevoluteJointDef();
-
-		jd.initialize(physicsObject1.getBody(), physicsObject2.getBody(),
+		jointDef.initialize(physicsObject1.getBody(), physicsObject2.getBody(),
 				center);
-		jd.collideConnected = false;
-		jd.enableMotor = true;
-		jd.motorSpeed = 0f;
 
-		jd.maxMotorTorque = 25000f * scale.x * scale.y * scale.y;
+		jointDef.getJointDef().collideConnected = false;
 
-		if (jointDef.getLimits() != null) {
-			jd.enableLimit = true;
-			jd.lowerAngle = jointDef.getLimits().x;
-			jd.upperAngle = jointDef.getLimits().y;
-		}
-
-		world.createJoint(jd);
+		world.createJoint(jointDef.getJointDef());
 	}
 
 	protected PhysicsObject addBody(String key, BodyDefinition bodyDef,
 			Vector2 pos) {
 		PhysicsObject physicsObject = new TexturedMeshPhysicsObject(pos,
 				this.scale, new SimpleOutlinedTextureObject(textureObject,
-						bodyDef.getOutline()).setDensity(bodyDef.getDensity()),
-				world);
+						bodyDef.getOutline()).setDensity(bodyDef.getDensity())
+						.setGroupIndex(groupIndex), world);
 
 		physicsObjects.put(key, physicsObject);
 

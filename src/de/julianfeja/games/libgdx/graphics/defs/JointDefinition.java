@@ -1,7 +1,10 @@
 package de.julianfeja.games.libgdx.graphics.defs;
 
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.JointDef.JointType;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.JointDef;
+import com.badlogic.gdx.physics.box2d.joints.DistanceJointDef;
+import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
 
 import de.julianfeja.games.libgdx.graphics.GeometricObject;
 
@@ -14,12 +17,10 @@ public class JointDefinition {
 	protected Vector2 point1;
 	protected Vector2 point2;
 
-	protected JointType type;
-
-	protected Vector2 limits = null;
+	protected JointDef jointDef;
 
 	public JointDefinition(String id, String idBody1, String idBody2,
-			Vector2 point1, Vector2 point2, JointType type) {
+			Vector2 point1, Vector2 point2, JointDef jointDef) {
 		this.id = id;
 
 		this.idBody1 = idBody1;
@@ -27,15 +28,8 @@ public class JointDefinition {
 
 		this.point1 = point1.cpy().mul(1 / GeometricObject.PPM);
 		this.point2 = point2.cpy().mul(1 / GeometricObject.PPM);
-		// this.point1.y *= -1;
-		// this.point2.y *= -1;
 
-		this.type = type;
-	}
-
-	public JointDefinition(String id, String idBody1, String idBody2,
-			Vector2 point1, Vector2 point2, String jType) {
-		this(id, idBody1, idBody2, point1, point2, JointType.valueOf(jType));
+		this.jointDef = jointDef;
 	}
 
 	public String getId() {
@@ -58,16 +52,68 @@ public class JointDefinition {
 		return new Vector2(point2.x * scale.x, point2.y * scale.y);
 	}
 
-	public JointType getType() {
-		return this.type;
+	// public JointDefinition setLimits(float lowerAngle, float upperAngle) {
+	// if (type == JointType.RevoluteJoint) {
+	// RevoluteJointDef def = (RevoluteJointDef) jointDef;
+	//
+	// def.enableLimit = true;
+	// def.lowerAngle = lowerAngle;
+	// def.upperAngle = upperAngle;
+	// }
+	//
+	// return this;
+	// }
+	//
+	// public JointDefinition setMotor(float motorSpeed, float maxMotorTorque) {
+	// if (type == JointType.RevoluteJoint) {
+	// RevoluteJointDef def = (RevoluteJointDef) jointDef;
+	//
+	// def.enableMotor = true;
+	// def.motorSpeed = motorSpeed;
+	// def.maxMotorTorque = maxMotorTorque;
+	// }
+	//
+	// return this;
+	// }
+	//
+	// public JointDefinition setCollideConnected(boolean collide) {
+	// jointDef.collideConnected = collide;
+	//
+	// return this;
+	// }
+	//
+	// public JointDefinition setDistance(float distance) {
+	// if (type == JointType.DistanceJoint) {
+	// DistanceJointDef def = (DistanceJointDef) jointDef;
+	//
+	// def.length = 20.0f;
+	// }
+	//
+	// return this;
+	// }
+
+	public void initialize(Body bodyA, Body bodyB, Vector2 center) {
+		switch (jointDef.type) {
+		case RevoluteJoint:
+			RevoluteJointDef revDef = (RevoluteJointDef) jointDef;
+
+			revDef.initialize(bodyA, bodyB, center);
+			break;
+
+		case DistanceJoint:
+			DistanceJointDef disDef = (DistanceJointDef) jointDef;
+
+			disDef.initialize(bodyA, bodyB, center, center);
+
+			break;
+
+		default:
+			break;
+		}
 	}
 
-	public Vector2 getLimits() {
-		return this.limits;
+	public JointDef getJointDef() {
+		return this.jointDef;
 	}
 
-	public void setLimits(Vector2 limits) {
-		this.limits = limits;
-
-	}
 }
