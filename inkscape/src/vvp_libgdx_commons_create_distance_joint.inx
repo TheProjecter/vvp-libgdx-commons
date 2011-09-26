@@ -6,7 +6,8 @@
   <dependency type="executable" location="extensions">vvp_libgdx_commons_inkscape.py</dependency>
   <dependency type="executable" location="extensions">inkex.py</dependency>
   <param name="distance" type="float" min="0.0" max="10000000" _gui-text="distance">0.0</param>
-  
+  <param name="dampingRatio" type="float" min="0.0" max="1.0" _gui-text="dampingRatio">0.0</param>
+  <param name="frequencyHz" type="float" min="0.0" max="10000000" _gui-text="frequencyHz">0.0</param>
   <effect>
     <object-type>all</object-type>
     <effects-menu>

@@ -17,9 +17,19 @@ class CreateDistanceJoint(inkex.Effect):
 		inkex.Effect.__init__(self)
 		
 		self.OptionParser.add_option("--distance",
-            action="store", type="inkbool", 
-            dest="distance", default=False,
+            action="store", type="float", 
+            dest="distance", default=0.0,
             help="distance")
+		
+		self.OptionParser.add_option("--dampingRatio",
+            action="store", type="float", 
+            dest="dampingRatio", default=0.0,
+            help="dampingRatio")
+		
+		self.OptionParser.add_option("--frequencyHz",
+            action="store", type="float", 
+            dest="frequencyHz", default=0.0,
+            help="frequencyHz")
 		
 	def createMarker(self):
 		
@@ -52,13 +62,18 @@ class CreateDistanceJoint(inkex.Effect):
 		line.set('vvpType', JointType.DistanceJoint)
 		line.set('body1', str(id1))
 		line.set('body2', str(id2))
-		line.set('style', 'fill:none;stroke:#000ff0;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-start:url(#DiamondMarker);marker-end:url(#CircleMarker);stroke-miterlimit:4;stroke-dasharray:3,3;stroke-dashoffset:0')
+		line.set('style', 'fill:none;stroke:#000ff0;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-start:url(#DiamondMarker);marker-end:url(#DiamondMarker);stroke-miterlimit:4;stroke-dasharray:3,3;stroke-dashoffset:0')
 		
 		
 		return line
 			
 	def setParams(self, node):
-		node.set('distance', str(self.options.distance))
+		node.set('distance', '%#.6f' %self.options.distance)
+		node.set('dampingRatio', '%#.6f' %self.options.dampingRatio)
+		node.set('frequencyHz', '%#.6f' %self.options.frequencyHz)
+		
+		
+		
 		
 
 	def effect(self):
@@ -71,7 +86,7 @@ class CreateDistanceJoint(inkex.Effect):
 				point1 = avgPoint(getPoints(node1.get('d')))
 				point2 = avgPoint(getPoints(node2.get('d')))
 				
-				line = self.createRevoluteJointLine(id1, id2, point1, point2)
+				line = self.createDistanceJointLine(id1, id2, point1, point2)
 				
 				self.current_layer.append(line)
 				return

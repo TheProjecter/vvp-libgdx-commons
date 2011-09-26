@@ -4,7 +4,8 @@
 # We will use the inkex module with the predefined Effect base class.
 import inkex, tempfile, os, zipfile, sys, shutil
 
-from vvp_libgdx_commons_inkscape import SvgSize, DefXml, getPoints, JointType
+from vvp_libgdx_commons_inkscape import SvgSize, DefXml, getPoints, JointType,\
+	getParams
 
 from subprocess import Popen, PIPE
 
@@ -98,14 +99,11 @@ class ExportBody(inkex.Effect):
 		
 		for node in self.document.xpath('//svg:path[@vvpType=\'Body\']', namespaces=inkex.NSS):
 			idNum = node.get('id')
-			density = node.get('density')
 			d = node.get('d')
 			
 			points = getPoints(d)
 			
-			params = {}
-			params['density'] = density
-			defXml.addBody(str(idNum), points, params)
+			defXml.addBody(str(idNum), points, getParams(node, ['density']))
 			
 		for node in self.document.xpath('//svg:path[@vvpType=\'%s\']' %JointType.RevoluteJoint, namespaces=inkex.NSS):
 			d = node.get('d')
@@ -121,6 +119,20 @@ class ExportBody(inkex.Effect):
 				point1 = points[0]
 				point2 = points[len(points) - 1]
 				defXml.addRevoluteJoint(idBody1, idBody2, point1, point2, limit, motor)
+				
+				
+		for node in self.document.xpath('//svg:path[@vvpType=\'%s\']' %JointType.DistanceJoint, namespaces=inkex.NSS):
+			d = node.get('d')
+			idNum = node.get('id')
+			idBody1 = node.get('body1')
+			idBody2 = node.get('body2')
+			
+			points = getPoints(d)
+			
+			if len(points) >= 2:
+				point1 = points[0]
+				point2 = points[len(points) - 1]
+				defXml.addDistanceJoint(idBody1, idBody2, point1, point2, getParams(node, ['distance', 'dampingRatio', 'frequencyHz']))
 			
 			
 		return defXml.toXml()
