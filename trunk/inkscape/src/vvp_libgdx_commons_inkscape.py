@@ -96,6 +96,14 @@ def normalizeAngle(self, angle):
 			
 	return angle / 180.0 * math.pi 
 
+def getParams(node, keyList):
+	ret = {}
+	for key in keyList:
+		ret[str(key)] = node.get(str(key))
+		
+	return ret
+		
+
 class JointType:
 	Unknown="Unknown"
 	RevoluteJoint="RevoluteJoint"
@@ -118,9 +126,7 @@ class DefXml:
 		bodyElement = dom.Element("body")
 		bodyElement.setAttribute("id", idNum)
 		
-		for p in params:
-			if params[p] != None:
-				bodyElement.setAttribute(p, str(params[p]))
+		self.setParams(bodyElement, params)
 		
 		for point in points:
 			bodyElement.appendChild(self.createPoint(point))
@@ -137,6 +143,11 @@ class DefXml:
 			pointElement.setAttribute('body', idBody)
 		
 		return pointElement
+	
+	def setParams(self, node, params):
+		for p in params:
+			if params[p] != None:
+				node.setAttribute(str(p), str(params[p]))
 	
 	def addRevoluteJoint(self, idBody1, idBody2, point1, point2, limits, motor):
 		jointElement = self.createJoint()
@@ -162,6 +173,17 @@ class DefXml:
 				motorElement.setAttribute("maxMotorTorque", str(motor[1]))
 				
 				jointElement.appendChild(motorElement)
+		
+		self.rootElement.appendChild(jointElement)
+		
+	def addDistanceJoint(self, idBody1, idBody2, point1, point2, params):
+		jointElement = self.createJoint()
+		
+		jointElement.setAttribute('type', JointType.DistanceJoint)
+		jointElement.appendChild(self.createPoint(point2, idBody2))
+		jointElement.appendChild(self.createPoint(point1, idBody1))
+		
+		self.setParams(jointElement, params)
 		
 		self.rootElement.appendChild(jointElement)
 	
