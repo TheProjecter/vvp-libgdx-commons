@@ -1,15 +1,15 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE inx SYSTEM "inx.dtd">
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
   <_name>LibGDX Toolchain</_name>
   <id>de.julianfeja.games.libgdx.inkscape.extensions.toolchain</id>
   <dependency type="executable" location="extensions">vvp_libgdx_commons_inkscape.py</dependency>
+  <dependency type="executable" location="extensions">vvp_libgdx_commons_toolchain.py</dependency>
   <dependency type="executable" location="extensions">inkex.py</dependency>
   <param name="libgdxToolchain" type="notebook" _gui-text="LibGDX Toolchain">
     <page name="body" _gui-text="Body">
       <param name="body_description" type="description" _value="_">Transform one or more paths to body paths.</param>
       <param name="body_sub" type="notebook">
-        <page name="body_std" _gui-text="standard"></page>
+        <page name="body_std" _gui-text="standard"/>
         <page name="body_boned" _gui-text="boned">
           <param name="bone_direction" type="optiongroup" appearance="minimal" _gui-text="Bone direction">
             <_option value="horizontal">horizontal</_option>
@@ -18,34 +18,41 @@
         </page>
       </param>
       <param name="flatness" type="float" min="0.0" max="1000.0" _gui-text="Flatness">10.0</param>
-  	  <param name="density" type="float" min="0.0" max="10000000.0" _gui-text="density">1.0</param>
+      <param name="density" type="float" min="0.0" max="10000000.0" _gui-text="density">1.0</param>
       <param name="hide" type="boolean" _gui-text="Hide?">false</param>
     </page>
     <page name="joint" _gui-text="Joint">
       <param name="joint_sub" type="notebook">
         <page name="revoluteJoint" _gui-text="revolute joint">
           <param name="revoluteJoint_sub1" type="notebook">
-            <page name="revoluteJoint_noLimit" _gui-text="useLimit=false"></page>
-            <page name="revoluteJoint_useLimit" _gui-text="useLimit=true">
-              <param name="upper" type="float" min="0.0" max="360.0" _gui-text="upper limit angle">0.0</param>
-              <param name="lower" type="float" min="-360.0" max="0.0" _gui-text="lower limit angle">0.0</param>
+            <page name="rj_noLimit" _gui-text="no limit"/>
+            <page name="rj_useLimit" _gui-text="use limit">
+              <param name="rj_upper" type="float" min="0.0" max="360.0" _gui-text="upper limit angle">0.0</param>
+              <param name="rj_lower" type="float" min="-360.0" max="0.0" _gui-text="lower limit angle">0.0</param>
             </page>
           </param>
           <param name="revoluteJoint_sub2" type="notebook">
-            <page name="revoluteJoint_noMotor" _gui-text="useMotor=false"></page>
-            <page name="revoluteJoint_useMotor" _gui-text="useMotor=true">
-              <param name="motorSpeed" type="float" min="-100000000.0" max="100000000.0" _gui-text="motorSpeed">0.0</param>
-              <param name="maxMotorTorque" type="float" min="0.0" max="100000000.0" _gui-text="maxMotorTorque">0.0</param>
+            <page name="rj_noMotor" _gui-text="no motor"/>
+            <page name="rj_useMotor" _gui-text="use motor">
+              <param name="rj_motorSpeed" type="float" min="-100000000.0" max="100000000.0" _gui-text="motorSpeed">0.0</param>
+              <param name="rj_maxMotorTorque" type="float" min="0.0" max="100000000.0" _gui-text="maxMotorTorque">0.0</param>
             </page>
-          </param> 
-        <page name="distanceJoint" _gui-text="distance joint">
-          <param name="distance" type="float" min="0.0" max="10000000" _gui-text="distance">0.0</param>
-          <param name="dampingRatio" type="float" min="0.0" max="1.0" _gui-text="dampingRatio">0.0</param>
-          <param name="frequencyHz" type="float" min="0.0" max="10000000" _gui-text="frequencyHz">0.0</param>
+          </param>
         </page>
+        <page name="distanceJoint" _gui-text="distance joint">
+        <param name="dj_distanceX" type="float" min="-10000000" max="10000000" _gui-text="distance x">0.0</param>
+        <param name="dj_distanceY" type="float" min="-10000000" max="10000000" _gui-text="distance y">0.0</param>
+        <param name="dj_dampingRatio" type="float" min="0.0" max="1.0" _gui-text="dampingRatio">0.0</param>
+        <param name="dj_frequencyHz" type="float" min="0.0" max="10000000" _gui-text="frequencyHz">0.0</param>
+      </page>
       </param>
     </page>
-    <page name="tools" _gui-text="Tools"/>
+    <page name="tools" _gui-text="Tools">
+      <param name="tools_sub" type="notebook">
+        <page name="hideMetaContent" _gui-text="hide meta content"></page>
+        <page name="showMetaContent" _gui-text="show meta content"></page>
+      </param>
+    </page>
   </param>
   <effect needs-live-preview="false">
     <object-type>all</object-type>
@@ -53,6 +60,6 @@
     </effects-menu>
   </effect>
   <script>
-    <command reldir="extensions" interpreter="python">vvp_libgdx_commons_mark_as_bodies.py</command>
+    <command reldir="extensions" interpreter="python">vvp_libgdx_commons_toolchain.py</command>
   </script>
 </inkscape-extension>
