@@ -5,6 +5,7 @@ from simplestyle import parseStyle, formatStyle
 import xml.dom.minidom as dom
 import math
 from lxml import etree
+import sys
 
 
 def hideAllBodies(document):
@@ -91,7 +92,7 @@ def getAllFloats(value):
 			
 	return ret
 
-def normalizeAngle(self, angle):
+def normalizeAngle(angle):
 	while angle <= -180.0:
 		angle += 360.0
 			
@@ -142,6 +143,8 @@ def createDiamondMarker(this):
 			
 		defs.insert(0, marker)
 		
+def printError(text):
+	sys.stderr.write('%s\n' %str(text))
 
 class JointType:
 	Unknown="Unknown"
@@ -155,13 +158,18 @@ class JointType:
 	WeldJoint="WeldJoint"
 	FrictionJoint="FrictionJoint"
 	
+class Types:
+	Body="Body"
+	Bone="Bone"
+	JointTypes=JointType()
+	
 class DefXml:
 	rootElement = dom.Element("vvp_libgdx_file")
 	
 	def toXml(self):
 		return self.rootElement.toprettyxml()
 	
-	def addBody(self, idNum, points, params):
+	def addBody(self, idNum, points, params, bone):
 		bodyElement = dom.Element("body")
 		bodyElement.setAttribute("id", idNum)
 		
@@ -170,7 +178,20 @@ class DefXml:
 		for point in points:
 			bodyElement.appendChild(self.createPoint(point))
 			
+		if bone != None:
+			bodyElement.appendChild(bone)
+			
 		self.rootElement.appendChild(bodyElement)
+		
+	def createBone(self, points, params):
+		boneElement = dom.Element("bone")
+		
+		for point in points:
+			boneElement.appendChild(self.createPoint(point))
+			
+		self.setParams(boneElement, params)
+		
+		return boneElement
 		
 	def createPoint(self, point, idBody=None):
 		pointElement = dom.Element("point")

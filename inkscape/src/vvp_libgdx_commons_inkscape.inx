@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
   <_name>LibGDX Toolchain</_name>
   <id>de.julianfeja.games.libgdx.inkscape.extensions.toolchain</id>
@@ -11,29 +11,30 @@
       <param name="body_sub" type="notebook">
         <page name="body_std" _gui-text="standard"/>
         <page name="body_boned" _gui-text="boned">
+          <param name="boned_description" type="description" _value="_">Create flexible body. The body will be cut into stripes along the direction.</param>
           <param name="bone_direction" type="optiongroup" appearance="minimal" _gui-text="Bone direction">
-            <_option value="horizontal">horizontal</_option>
-            <_option value="vertical">vertical</_option>
+            <_option value="Horizontal">horizontal</_option>
+            <_option value="Vertical">vertical</_option>
           </param>
         </page>
       </param>
-      <param name="flatness" type="float" min="0.0" max="1000.0" _gui-text="Flatness">10.0</param>
-      <param name="density" type="float" min="0.0" max="10000000.0" _gui-text="density">1.0</param>
-      <param name="hide" type="boolean" _gui-text="Hide?">false</param>
+      <param name="body_flatness" type="float" min="0.0" max="1000.0" _gui-text="Flatness">10.0</param>
+      <param name="body_density" type="float" min="0.0" max="10000000.0" _gui-text="density">1.0</param>
+      <param name="body_hide" type="boolean" _gui-text="Hide?">false</param>
     </page>
     <page name="joint" _gui-text="Joint">
-      <param name="joint_sub" type="notebook">
+      <param name="joint" type="notebook">
         <page name="revoluteJoint" _gui-text="revolute joint">
-          <param name="revoluteJoint_sub1" type="notebook">
-            <page name="rj_noLimit" _gui-text="no limit"/>
-            <page name="rj_useLimit" _gui-text="use limit">
+          <param name="revoluteJoint_limit" type="notebook">
+            <page name="noLimit" _gui-text="no limit"/>
+            <page name="useLimit" _gui-text="use limit">
               <param name="rj_upper" type="float" min="0.0" max="360.0" _gui-text="upper limit angle">0.0</param>
               <param name="rj_lower" type="float" min="-360.0" max="0.0" _gui-text="lower limit angle">0.0</param>
             </page>
           </param>
-          <param name="revoluteJoint_sub2" type="notebook">
-            <page name="rj_noMotor" _gui-text="no motor"/>
-            <page name="rj_useMotor" _gui-text="use motor">
+          <param name="revoluteJoint_motor" type="notebook">
+            <page name="noMotor" _gui-text="no motor"/>
+            <page name="useMotor" _gui-text="use motor">
               <param name="rj_motorSpeed" type="float" min="-100000000.0" max="100000000.0" _gui-text="motorSpeed">0.0</param>
               <param name="rj_maxMotorTorque" type="float" min="0.0" max="100000000.0" _gui-text="maxMotorTorque">0.0</param>
             </page>
@@ -49,12 +50,20 @@
     </page>
     <page name="tools" _gui-text="Tools">
       <param name="tools_sub" type="notebook">
-        <page name="hideMetaContent" _gui-text="hide meta content"></page>
-        <page name="showMetaContent" _gui-text="show meta content"></page>
+      	<page name="visibility" _gui-text="visibility">
+      	  <param name="visility_description" type="description" _value="_">Show or hide all meta information objects.</param>
+      	  <param name="visibility" type="notebook">
+      	    <page name="hideMetaContent" _gui-text="hide"></page>
+            <page name="showMetaContent" _gui-text="show"></page>
+            <page name="customVisibility" _gui-text="custom">
+              <param name="customVisibility" type="float" min="0.0" max="1.0" _gui-text="custom visibility">0.5</param>
+            </page>
+      	  </param>
+      	</page>
       </param>
     </page>
   </param>
-  <effect needs-live-preview="false">
+  <effect needs-live-preview="true">
     <object-type>all</object-type>
     <effects-menu>
     </effects-menu>
