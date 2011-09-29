@@ -23,6 +23,8 @@ import com.badlogic.gdx.utils.Array;
 
 import daniel.weck.BayazitDecomposer;
 import de.julianfeja.games.libgdx.graphics.defs.BodyDefinition;
+import de.julianfeja.games.libgdx.graphics.defs.BoneDefinition;
+import de.julianfeja.games.libgdx.graphics.defs.BoneDefinition.Direction;
 import de.julianfeja.games.libgdx.graphics.defs.JointDefinition;
 import de.julianfeja.games.libgdx.graphics.physical.PhysicsObjectGroup;
 import de.julianfeja.games.libgdx.graphics.texture.BoxBodyTexture;
@@ -63,11 +65,10 @@ public class ZipMultitextureInput extends ZipInput {
 	protected static Map<String, BodyDefinition> parseOutlines(Document document) {
 		Map<String, BodyDefinition> bodyDefs = new LinkedHashMap<String, BodyDefinition>();
 
-		@SuppressWarnings("rawtypes")
-		List bodys = document.selectNodes("//body");
+		@SuppressWarnings("unchecked")
+		List<Node> bodys = document.selectNodes("//body");
 
-		for (Object bodyObject : bodys) {
-			Node bodyNode = (Node) bodyObject;
+		for (Node bodyNode : bodys) {
 
 			String id = bodyNode.valueOf("@id");
 			float density = bodyNode.numberValueOf("@density").floatValue();
@@ -78,12 +79,10 @@ public class ZipMultitextureInput extends ZipInput {
 
 			Array<Vector2> outline = new Array<Vector2>();
 
-			@SuppressWarnings("rawtypes")
-			List points = bodyNode.selectNodes("./point");
+			@SuppressWarnings("unchecked")
+			List<Node> points = bodyNode.selectNodes("./point");
 
-			for (Object pointObject : points) {
-				Node pointNode = (Node) pointObject;
-
+			for (Node pointNode : points) {
 				outline.add(parsePoint(pointNode));
 			}
 
@@ -91,10 +90,35 @@ public class ZipMultitextureInput extends ZipInput {
 				outline.reverse();
 			}
 
-			bodyDefs.put(id, new BodyDefinition(id, outline, density));
+			@SuppressWarnings("unchecked")
+			List<Node> bones = bodyNode.selectNodes("./bone");
+
+			BoneDefinition boneDefinition = null;
+
+			if (bones.size() >= 1) {
+				boneDefinition = parseBoneDefinition(bones.get(0));
+			}
+
+			bodyDefs.put(id, new BodyDefinition(id, outline, density,
+					boneDefinition));
 		}
 
 		return bodyDefs;
+	}
+
+	protected static BoneDefinition parseBoneDefinition(Node node) {
+		Direction direction = Direction.valueOf(node.valueOf("@direction"));
+
+		Array<Vector2> bonePoints = new Array<Vector2>();
+
+		@SuppressWarnings("unchecked")
+		List<Node> points = node.selectNodes("./point");
+
+		for (Node pointNode : points) {
+			bonePoints.add(parsePoint(pointNode));
+		}
+
+		return new BoneDefinition(direction, bonePoints);
 	}
 
 	protected static Vector2 parsePoint(Node node) {
@@ -142,6 +166,7 @@ public class ZipMultitextureInput extends ZipInput {
 
 					if (limits.size() > 0) {
 						Node limitNode = (Node) limits.get(0);
+						rjd.enableLimit = true;
 
 						rjd.lowerAngle = limitNode.numberValueOf("@lower")
 								.floatValue();
@@ -237,12 +262,15 @@ public class ZipMultitextureInput extends ZipInput {
 		return pixmap;
 	}
 
+	public BodyDefinition getBodyDefinition(String id) {
+		return bodyDefs.get(id);
+	}
+
+	public BodyDefinition getBodyDefinition(int index) {
+		return new ArrayList<BodyDefinition>(bodyDefs.values()).get(index);
+	}
+
 	public Array<Vector2> getOutline(int index) {
-		if (index >= 0 && index < bodyDefs.size()) {
-			return new ArrayList<BodyDefinition>(bodyDefs.values()).get(index)
-					.getOutline();
-		} else {
-			return null;
-		}
+		return getBodyDefinition(index).getOutline();
 	}
 }

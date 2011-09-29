@@ -24,6 +24,7 @@ public abstract class TextureObject {
 	protected Vector2 dimension;
 	protected int meshMode = GL10.GL_TRIANGLES;
 	protected float density = 1.0f;
+	protected Array<Vector2> outline;
 	private short groupIndex = 0;
 
 	public TextureObject(Pixmap pixmap, Rectangle rect) {
@@ -42,6 +43,8 @@ public abstract class TextureObject {
 
 		this.rect = other.getRect();
 
+		this.outline = outline;
+
 		init(outline);
 	}
 
@@ -53,6 +56,8 @@ public abstract class TextureObject {
 		} else if (meshMode == GL10.GL_TRIANGLE_FAN) {
 			mesh = createTextureMesh(outline);
 		}
+
+		this.outline = outline;
 
 		trimRectangle(outline);
 	}
@@ -93,6 +98,10 @@ public abstract class TextureObject {
 
 	public float getDensity() {
 		return this.density;
+	}
+
+	public Array<Vector2> getOutline() {
+		return this.outline;
 	}
 
 	protected void trimRectangle(Array<Vector2> outline) {
@@ -302,6 +311,87 @@ public abstract class TextureObject {
 		this.groupIndex = groupIndex;
 
 		return this;
+	}
+
+	public Array<TextureObject> cut(Vector2 cutPoint1, Vector2 cutPoint2) {
+		Array<TextureObject> ret = new Array<TextureObject>(2);
+
+		Vector2 linePoint1 = outline.get(outline.size - 1);
+		Vector2 linePoint2 = null;
+
+		Array<Vector2> outline1 = new Array<Vector2>();
+		Array<Vector2> outline2 = new Array<Vector2>();
+
+		Vector2 intersection1 = null;
+		Vector2 intersection2 = null;
+
+		for (int i = 0; i < outline.size; i++) {
+			linePoint2 = outline.get(i);
+
+			Vector2 intersection = getIntersectionPoint(linePoint1, linePoint2,
+					cutPoint1, cutPoint2);
+
+			if (intersection == null) {
+				if (intersection1 == null || intersection2 != null) {
+					outline1.add(linePoint2);
+				} else {
+					outline2.add(linePoint2);
+				}
+			} else {
+				if (intersection != null) {
+					if (intersection1 == null) {
+						intersection1 = intersection;
+						outline1.add(intersection);
+						outline2.add(intersection);
+						outline2.add(linePoint2);
+					} else if (intersection2 == null) {
+						intersection2 = intersection;
+						outline2.add(intersection);
+						outline1.add(intersection);
+						outline1.add(linePoint2);
+					}
+				}
+			}
+
+			linePoint1 = outline.get(i);
+		}
+
+		ret.add(new SimpleOutlinedTextureObject(this, outline1));
+		ret.add(new SimpleOutlinedTextureObject(this, outline2));
+
+		return ret;
+	}
+
+	protected Vector2 getIntersectionPoint(Vector2 a1, Vector2 a2, Vector2 b1,
+			Vector2 b2) {
+		float x1, x2, y1, y2, q2, q1, u2, u1;
+		x1 = a1.x;
+		x2 = a2.x;
+
+		y1 = a1.y;
+		y2 = a2.y;
+
+		q1 = b1.x;
+		q2 = b2.x;
+
+		u1 = b1.y;
+		u2 = b2.y;
+
+		float n = (y2 - y1) * (q2 - q1) - (u2 - u1) * (x2 - x1);
+
+		if (n != 0) {
+			float a = (u2 - u1) * (x1 - q1) + (u1 - y1) * (q2 - q1) / n;
+
+			float xS = x1 + a * (x2 - x1);
+			float yS = y1 + a * (y2 - y1);
+			if ((((xS >= x1) && (xS <= x2)) || ((xS >= x2) && (xS <= x1)))
+					&& (((xS >= q1) && (xS <= q2)) || ((xS >= q2) && (xS <= q1)))) {
+
+				return new Vector2(xS, yS);
+			}
+		}
+
+		return null;
 	}
 
 }
