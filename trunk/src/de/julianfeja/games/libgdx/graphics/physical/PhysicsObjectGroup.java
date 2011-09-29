@@ -9,26 +9,24 @@ import com.badlogic.gdx.physics.box2d.Joint;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 
-import de.julianfeja.games.libgdx.graphics.GeometricObject;
 import de.julianfeja.games.libgdx.graphics.defs.BodyDefinition;
 import de.julianfeja.games.libgdx.graphics.defs.JointDefinition;
 import de.julianfeja.games.libgdx.graphics.texture.SimpleOutlinedTextureObject;
 import de.julianfeja.games.libgdx.graphics.texture.TextureObject;
 
-public class PhysicsObjectGroup extends GeometricObject implements Physical {
+public class PhysicsObjectGroup extends PhysicsObject {
 	protected Map<String, Joint> joints = new LinkedHashMap<String, Joint>();
 	protected Map<String, PhysicsObject> physicsObjects = new LinkedHashMap<String, PhysicsObject>();
 
 	protected short groupIndex = PhysicsObject.getNextNonColideGroup();
 
-	protected World world;
 	protected TextureObject textureObject;
 
 	public PhysicsObjectGroup(Vector2 position, Vector2 scale,
 			Map<String, BodyDefinition> bodyDefs,
 			Array<JointDefinition> jointDefs, TextureObject textureObject,
 			World world) {
-		super(position, scale);
+		super(position, scale, new Vector2(), world);
 
 		this.textureObject = textureObject;
 		this.world = world;
@@ -36,6 +34,9 @@ public class PhysicsObjectGroup extends GeometricObject implements Physical {
 		for (JointDefinition jointDef : jointDefs) {
 			addJoint(jointDef, bodyDefs);
 		}
+
+		body = physicsObjects.get(physicsObjects.keySet().iterator().next())
+				.getBody();
 	}
 
 	protected void addJoint(JointDefinition jointDef,
@@ -97,11 +98,21 @@ public class PhysicsObjectGroup extends GeometricObject implements Physical {
 
 	protected PhysicsObject addBody(String key, BodyDefinition bodyDef,
 			Vector2 pos) {
-		PhysicsObject physicsObject = new TexturedMeshPhysicsObject(pos,
-				this.scale, new SimpleOutlinedTextureObject(textureObject,
-						bodyDef.getOutline()).setDensity(bodyDef.getDensity())
-						.setGroupIndex(groupIndex), world);
 
+		PhysicsObject physicsObject = null;
+
+		if (bodyDef.getBoneDefinition() != null) {
+			physicsObject = new FlexibleObject(pos, this.scale, bodyDef,
+					new SimpleOutlinedTextureObject(textureObject,
+							bodyDef.getOutline()), world);
+		} else {
+			physicsObject = new TexturedMeshPhysicsObject(pos, this.scale,
+					new SimpleOutlinedTextureObject(textureObject, bodyDef
+							.getOutline()).setDensity(bodyDef.getDensity())
+							.setGroupIndex(groupIndex),
+					world);
+
+		}
 		physicsObjects.put(key, physicsObject);
 
 		return physicsObject;

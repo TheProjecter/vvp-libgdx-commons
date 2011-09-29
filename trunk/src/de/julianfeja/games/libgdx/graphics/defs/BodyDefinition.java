@@ -7,11 +7,14 @@ public class BodyDefinition {
 	protected String id;
 	protected Array<Vector2> outline;
 	protected float density;
+	protected BoneDefinition boneDefinition;
 
-	public BodyDefinition(String id, Array<Vector2> outline, float density) {
+	public BodyDefinition(String id, Array<Vector2> outline, float density,
+			BoneDefinition boneDefinition) {
 		this.id = id;
 		this.outline = outline;
 		this.density = density;
+		this.boneDefinition = boneDefinition;
 	}
 
 	public String getId() {
@@ -24,5 +27,16 @@ public class BodyDefinition {
 
 	public float getDensity() {
 		return this.density;
+	}
+
+	public BoneDefinition getBoneDefinition() {
+		return this.boneDefinition;
+	}
+
+	public boolean isBonedBody() {
+		if (boneDefinition == null) {
+			return false;
+		} else
+			return true;
 	}
 }
