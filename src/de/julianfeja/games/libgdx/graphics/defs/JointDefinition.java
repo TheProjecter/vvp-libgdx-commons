@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.JointDef;
 import com.badlogic.gdx.physics.box2d.joints.DistanceJointDef;
+import com.badlogic.gdx.physics.box2d.joints.PrismaticJointDef;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
 
 import de.julianfeja.games.libgdx.graphics.GeometricObject;
@@ -16,6 +17,9 @@ public class JointDefinition {
 
 	protected Vector2 point1;
 	protected Vector2 point2;
+
+	protected Vector2 axis = new Vector2(0f, 1f);
+	protected boolean centerToCenter = false;
 
 	protected JointDef jointDef;
 
@@ -50,6 +54,18 @@ public class JointDefinition {
 
 	public Vector2 getPoint2(Vector2 scale) {
 		return new Vector2(point2.x * scale.x, point2.y * scale.y);
+	}
+
+	public JointDefinition setAxis(Vector2 axis) {
+		this.axis.set(axis);
+
+		return this;
+	}
+
+	public JointDefinition setCenterToCenter(boolean centerToCenter) {
+		this.centerToCenter = centerToCenter;
+
+		return this;
 	}
 
 	// public JointDefinition setLimits(float lowerAngle, float upperAngle) {
@@ -103,9 +119,19 @@ public class JointDefinition {
 		case DistanceJoint:
 			DistanceJointDef disDef = (DistanceJointDef) jointDef;
 
-			disDef.initialize(bodyA, bodyB, center, center);
+			if (centerToCenter) {
+				disDef.initialize(bodyA, bodyB, bodyA.getWorldCenter(),
+						bodyB.getWorldCenter());
+			} else {
+				disDef.initialize(bodyA, bodyB, center, center);
+			}
 
 			break;
+
+		case PrismaticJoint:
+			PrismaticJointDef prisDef = (PrismaticJointDef) jointDef;
+
+			prisDef.initialize(bodyA, bodyB, center, new Vector2(0f, 1f));
 
 		default:
 			break;

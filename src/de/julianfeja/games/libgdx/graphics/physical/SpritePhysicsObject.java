@@ -48,9 +48,9 @@ public class SpritePhysicsObject extends PhysicsObject {
 		// fixtureDef.filter.categoryBits = 0x0001;
 		// fixtureDef.filter.maskBits = 0x0001;
 		// fixtureDef.isSensor = false;
-		// fixtureDef.restitution = 0.4f;
 		fixtureDef.density = density;
 		fixtureDef.friction = 0.5f;
+		fixtureDef.restitution = 0.2f;
 
 		return fixtureDef;
 	}
