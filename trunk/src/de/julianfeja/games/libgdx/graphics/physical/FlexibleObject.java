@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.physics.box2d.joints.DistanceJointDef;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
 import com.badlogic.gdx.utils.Array;
 
@@ -31,16 +32,27 @@ public class FlexibleObject extends PhysicsObjectGroup {
 
 		RevoluteJointDef revoluteJointDef = new RevoluteJointDef();
 
-		revoluteJointDef.enableMotor = true;
+		revoluteJointDef.enableMotor = false;
 		revoluteJointDef.motorSpeed = 0f;
-		revoluteJointDef.maxMotorTorque = 200f;
+		revoluteJointDef.maxMotorTorque = 20f;
 		revoluteJointDef.collideConnected = false;
+
+		// PrismaticJointDef prismaticJointDef = new PrismaticJointDef();
+		// prismaticJointDef.enableLimit = true;
+		// prismaticJointDef.upperTranslation = 0f;
+		// prismaticJointDef.lowerTranslation = 0f;
+		//
+
+		DistanceJointDef distanceJointDef = new DistanceJointDef();
 
 		for (int i = 1; i < points.size - 1; i++) {
 			String idBodyA = bodyDefinition.getId() + "#" + (i - 1);
 			String idBodyB = bodyDefinition.getId() + "#" + (i);
 			ret.add(new JointDefinition("", idBodyA, idBodyB, points.get(i),
 					points.get(i), revoluteJointDef));
+
+			ret.add(new JointDefinition("", idBodyA, idBodyB, points.get(i),
+					points.get(i), distanceJointDef).setCenterToCenter(true));
 		}
 		return ret;
 
@@ -54,22 +66,25 @@ public class FlexibleObject extends PhysicsObjectGroup {
 
 		Array<Array<Vector2>> cutLines = createCutLines(boneDef, textureObject);
 
-		TextureObject t = textureObject;
+		TextureObject t1 = textureObject;
+		TextureObject t2 = textureObject;
 
 		int i = 0;
 		for (Array<Vector2> cutLine : cutLines) {
-			Array<TextureObject> ts = t.cut(cutLine.get(0), cutLine.get(1));
+			t1.normalize(bodyDefinition.getBoneDefinition().getDirection());
+			Array<TextureObject> ts = t1.cut(cutLine.get(0), cutLine.get(1));
 
 			ret.put(bodyDefinition.getId() + "#" + i, new BodyDefinition(
 					bodyDefinition.getId(), ts.get(0).getOutline(),
 					bodyDefinition.getDensity(), null));
 
-			t = ts.get(1);
+			t1 = ts.get(1);
+			t2 = ts.get(1);
 			i++;
 		}
 
 		ret.put(bodyDefinition.getId() + "#" + i,
-				new BodyDefinition(bodyDefinition.getId(), t.getOutline(),
+				new BodyDefinition(bodyDefinition.getId(), t1.getOutline(),
 						bodyDefinition.getDensity(), null));
 
 		return ret;

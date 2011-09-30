@@ -14,6 +14,7 @@ import com.badlogic.gdx.utils.Array;
 import daniel.weck.BayazitDecomposer;
 import de.julianfeja.games.libgdx.graphics.GeometricObject;
 import de.julianfeja.games.libgdx.graphics.Rectangle;
+import de.julianfeja.games.libgdx.graphics.defs.BoneDefinition.Direction;
 
 public abstract class TextureObject {
 	protected String assetPath;
@@ -356,10 +357,49 @@ public abstract class TextureObject {
 			linePoint1 = outline.get(i);
 		}
 
+		if (outline1.size < 3 || outline2.size < 3) {
+			return null;
+		}
+
 		ret.add(new SimpleOutlinedTextureObject(this, outline1));
 		ret.add(new SimpleOutlinedTextureObject(this, outline2));
 
 		return ret;
+	}
+
+	public void normalize(Direction direction) {
+		int index = 0;
+		float min = Float.MAX_VALUE;
+
+		for (int i = 0; i < outline.size; i++) {
+			Vector2 v = outline.get(i);
+			if (direction == Direction.Horizontal) {
+				if (v.x < min) {
+					min = v.x;
+					index = i;
+				}
+			} else if (direction == Direction.Vertical) {
+				if (v.y < min) {
+					min = v.y;
+					index = i;
+				}
+			}
+		}
+
+		if (index != 0) {
+			Array<Vector2> newOutline = new Array<Vector2>(outline.size);
+
+			for (int i = 0; i < outline.size; i++) {
+				if (index >= outline.size) {
+					index = 0;
+				}
+				newOutline.add(outline.get(index));
+
+				index++;
+			}
+
+			outline = newOutline;
+		}
 	}
 
 	protected Vector2 getIntersectionPoint(Vector2 a1, Vector2 a2, Vector2 b1,
