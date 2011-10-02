@@ -125,7 +125,7 @@ class ExportBody(inkex.Effect):
 				else:
 					bone = None
 				
-			defXml.addBody(str(idNum), points, getParams(node, ['density']), bone)
+			defXml.addBody(str(idNum), points, getParams(node, ['density', 'fixedRotation', 'staticBody', 'collideGroup']), bone)
 			
 		for node in self.document.xpath('//svg:path[@vvpType=\'%s\']' %JointType.RevoluteJoint, namespaces=inkex.NSS):
 			d = node.get('d')

@@ -101,7 +101,9 @@ def normalizeAngle(angle):
 def getParams(node, keyList):
 	ret = {}
 	for key in keyList:
-		ret[str(key)] = node.get(str(key))
+		value = node.get(str(key))
+		if value != None:
+			ret[str(key)] = value
 		
 	return ret
 
@@ -192,6 +194,7 @@ class DefXml:
 		self.setParams(boneElement, params)
 		
 		return boneElement
+		
 		
 	def createPoint(self, point, idBody=None):
 		pointElement = dom.Element("point")
