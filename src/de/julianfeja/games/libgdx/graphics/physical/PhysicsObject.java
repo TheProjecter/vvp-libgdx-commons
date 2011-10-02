@@ -19,8 +19,8 @@ abstract public class PhysicsObject extends GeometricObject implements Physical 
 	protected boolean active = false;
 	protected Vector2 dimension;
 
-	private static short nextColideGroup = 1;
-	private static short nextNonColideGroup = -1;
+	private static short nextColideGroup = 11;
+	private static short nextNonColideGroup = -11;
 
 	public PhysicsObject(Vector2 position, Vector2 scale, Vector2 dimension,
 			World world) {
@@ -32,11 +32,19 @@ abstract public class PhysicsObject extends GeometricObject implements Physical 
 	}
 
 	public static short getNextColideGroup() {
-		return nextColideGroup++;
+		short ret = nextColideGroup;
+
+		nextColideGroup += 10;
+
+		return ret;
 	}
 
 	public static short getNextNonColideGroup() {
-		return nextNonColideGroup--;
+		short ret = nextNonColideGroup;
+
+		nextNonColideGroup -= 10;
+
+		return ret;
 	}
 
 	@Override

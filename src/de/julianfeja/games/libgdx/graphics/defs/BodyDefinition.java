@@ -8,13 +8,21 @@ public class BodyDefinition {
 	protected Array<Vector2> outline;
 	protected float density;
 	protected BoneDefinition boneDefinition;
+	protected boolean staticBody = false;
+	protected boolean fixedRotation = false;
+	protected short collideGroup;
 
 	public BodyDefinition(String id, Array<Vector2> outline, float density,
-			BoneDefinition boneDefinition) {
+			BoneDefinition boneDefinition, short collideGroup) {
 		this.id = id;
 		this.outline = outline;
 		this.density = density;
 		this.boneDefinition = boneDefinition;
+		this.collideGroup = collideGroup;
+	}
+
+	public short getCollideGroup() {
+		return this.collideGroup;
 	}
 
 	public String getId() {
@@ -39,4 +47,23 @@ public class BodyDefinition {
 		} else
 			return true;
 	}
+
+	public boolean getStaticBody() {
+		return staticBody;
+	}
+
+	public boolean getFixedRotation() {
+		return fixedRotation;
+	}
+
+	public BodyDefinition setStaticBody(boolean staticBody) {
+		this.staticBody = staticBody;
+		return this;
+	}
+
+	public BodyDefinition setFixedRotation(boolean fixedRotation) {
+		this.fixedRotation = fixedRotation;
+		return this;
+	}
+
 }

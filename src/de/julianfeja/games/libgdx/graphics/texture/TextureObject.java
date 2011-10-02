@@ -28,6 +28,9 @@ public abstract class TextureObject {
 	protected Array<Vector2> outline;
 	private short groupIndex = 0;
 
+	protected boolean staticBody = false;
+	protected boolean fixedRotation = false;
+
 	public TextureObject(Pixmap pixmap, Rectangle rect) {
 		texture = TextureManager.instance().createTexture(assetPath, pixmap);
 
@@ -367,6 +370,45 @@ public abstract class TextureObject {
 		return ret;
 	}
 
+	public Array<TextureObject> cut(Array<Array<Vector2>> cutLines, int index,
+			byte lastCutIndex) {
+		Array<TextureObject> ret;
+		if (index == cutLines.size) {
+			ret = new Array<TextureObject>();
+			ret.add(this);
+		} else {
+			Array<Vector2> cutLine = cutLines.get(index);
+			Array<TextureObject> cuts = cut(cutLine.get(0), cutLine.get(1));
+
+			if (cuts == null) {
+				return null;
+			}
+
+			if (index == cutLines.size - 1) {
+				ret = new Array<TextureObject>();
+
+				ret.add(cuts.get(lastCutIndex));
+				ret.add(cuts.get(lastCutIndex));
+			}
+
+			ret = cuts.get(0).cut(cutLines, index + 1, 0);
+
+			if (ret == null) {
+				ret = cuts.get(1).cut(cutLines, index + 1, 1);
+
+				ret.add(cuts.get(0));
+			} else {
+				ret.add(cuts.get(1));
+			}
+		}
+
+		return ret;
+	}
+
+	public Array<TextureObject> cut(Array<Array<Vector2>> cutLines) {
+		return cut(cutLines, 0, 0);
+	}
+
 	public void normalize(Direction direction) {
 		int index = 0;
 		float min = Float.MAX_VALUE;
@@ -432,6 +474,24 @@ public abstract class TextureObject {
 		}
 
 		return null;
+	}
+
+	public boolean getStaticBody() {
+		return staticBody;
+	}
+
+	public boolean getFixedRotation() {
+		return fixedRotation;
+	}
+
+	public TextureObject setStaticBody(boolean staticBody) {
+		this.staticBody = staticBody;
+		return this;
+	}
+
+	public TextureObject setFixedRotation(boolean fixedRotation) {
+		this.fixedRotation = fixedRotation;
+		return this;
 	}
 
 }

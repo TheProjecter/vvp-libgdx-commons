@@ -67,25 +67,25 @@ public class FlexibleObject extends PhysicsObjectGroup {
 		Array<Array<Vector2>> cutLines = createCutLines(boneDef, textureObject);
 
 		TextureObject t1 = textureObject;
-		TextureObject t2 = textureObject;
 
 		int i = 0;
 		for (Array<Vector2> cutLine : cutLines) {
-			t1.normalize(bodyDefinition.getBoneDefinition().getDirection());
+			// t1.normalize(bodyDefinition.getBoneDefinition().getDirection());
 			Array<TextureObject> ts = t1.cut(cutLine.get(0), cutLine.get(1));
 
-			ret.put(bodyDefinition.getId() + "#" + i, new BodyDefinition(
-					bodyDefinition.getId(), ts.get(0).getOutline(),
-					bodyDefinition.getDensity(), null));
+			ret.put(bodyDefinition.getId() + "#" + i,
+					new BodyDefinition(bodyDefinition.getId(), ts.get(0)
+							.getOutline(), bodyDefinition.getDensity(), null,
+							bodyDefinition.getCollideGroup()));
 
 			t1 = ts.get(1);
-			t2 = ts.get(1);
 			i++;
 		}
 
 		ret.put(bodyDefinition.getId() + "#" + i,
 				new BodyDefinition(bodyDefinition.getId(), t1.getOutline(),
-						bodyDefinition.getDensity(), null));
+						bodyDefinition.getDensity(), null, bodyDefinition
+								.getCollideGroup()));
 
 		return ret;
 	}
