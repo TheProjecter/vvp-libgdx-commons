@@ -129,6 +129,17 @@ class LibGdxToolchain(inkex.Effect):
 			
 				node.set('vvpType',  Types.Body)
 				node.set('density', str(self.options.body_density))
+				
+				if self.options.body_fixedRotation:
+					node.set('fixedRotation',  '1')
+				else:
+					node.set('fixedRotation',  '0')
+					
+				if self.options.body_staticBody:
+					node.set('staticBody',  '1')
+				else:
+					node.set('staticBody',  '0')
+				
 				if self.options.body_hide:
 					node.set('style', 'fill:%s;fill-opacity:0.4;opacity:0;stroke:%s;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:6, 6;stroke-dashoffset:0' % (color,color))
 				else:
@@ -223,6 +234,19 @@ class LibGdxToolchain(inkex.Effect):
 		node.set('dampingRatio', '%#.6f' %self.options.dj_dampingRatio)
 		node.set('frequencyHz', '%#.6f' %self.options.dj_frequencyHz)
 		
+	def setGroup(self, groupNr, localGrouping, collide):
+		if localGrouping:
+			groupNr = groupNr + 10
+		if not collide:
+			groupNr = -groupNr
+			
+		for idNr, node in self.selected.iteritems():
+			if node.tag == inkex.addNS('path','svg') and node.get('vvpType') == Types.Body:
+				node.set('collideGroup', str(groupNr))
+				
+			
+		
+		
 		
 	def effect(self):	
 		if self.options.libgdxToolchain == '"body"':
@@ -252,6 +276,19 @@ class LibGdxToolchain(inkex.Effect):
 					visible = self.options.customVisibility
 					
 				setOpacityToAll(self.document, visible)
+			elif self.options.tools_sub == '"grouping"':
+				localGrouping = True
+				if self.options.groupingScope == 'global':
+					localGrouping = False
+				collide = False
+				if self.options.collideGroup == 'collide':
+					collide = True
+				group = int(self.options.collideGroupNr)
+				
+				self.setGroup(group, localGrouping, collide)
+				
+				
+				
 					
 		
 

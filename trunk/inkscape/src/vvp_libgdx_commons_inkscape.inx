@@ -12,7 +12,7 @@
         <page name="body_std" _gui-text="standard"/>
         <page name="body_boned" _gui-text="boned">
           <param name="boned_description" type="description" _value="_">Create flexible body. The body will be cut into stripes along the direction.</param>
-          <param name="bone_direction" type="optiongroup" appearance="minimal" _gui-text="Bone direction">
+          <param name="bone_direction" type="optiongroup" _gui-text="Bone direction">
             <_option value="Horizontal">horizontal</_option>
             <_option value="Vertical">vertical</_option>
           </param>
@@ -20,6 +20,8 @@
       </param>
       <param name="body_flatness" type="float" min="0.0" max="1000.0" _gui-text="Flatness">10.0</param>
       <param name="body_density" type="float" min="0.0" max="10000000.0" _gui-text="density">1.0</param>
+      <param name="body_fixedRotation" type="boolean" _gui-text="fixedRotation">false</param>
+      <param name="body_staticBody" type="boolean" _gui-text="static Body">false</param>
       <param name="body_hide" type="boolean" _gui-text="Hide?">false</param>
     </page>
     <page name="joint" _gui-text="Joint">
@@ -59,6 +61,29 @@
               <param name="customVisibility" type="float" min="0.0" max="1.0" _gui-text="custom visibility">0.5</param>
             </page>
       	  </param>
+      	</page>
+      	<page name="grouping" gui-text="Grouping">
+      		<param name="grouping_description" type="description" _value="_">Create collide group with selected bodies</param>
+      		<param name="groupingScope" type="optiongroup" _gui-text="grouping scope">
+      			<_option value="global">global</_option>
+             	<_option value="local">local</_option>
+      		</param>
+      		<param name="collideGroup" type="optiongroup" _gui-text="collide selected">
+      			<_option value="collide">collide</_option>
+             	<_option value="nonCollide">don't collide</_option>
+      		</param>
+      		<param name="collideGroupNr" type="optiongroup" appearance="minimal" _gui-text="Group Number">
+             <_option value="1">#1</_option>
+             <_option value="2">#2</_option>
+             <_option value="3">#3</_option>
+             <_option value="4">#4</_option>
+             <_option value="5">#5</_option>
+             <_option value="6">#6</_option>
+             <_option value="7">#7</_option>
+             <_option value="8">#8</_option>
+             <_option value="9">#9</_option>
+             <_option value="10">#10</_option>
+			</param>
       	</page>
       </param>
     </page>
