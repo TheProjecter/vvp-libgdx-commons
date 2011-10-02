@@ -26,6 +26,7 @@ import de.julianfeja.games.libgdx.graphics.defs.BodyDefinition;
 import de.julianfeja.games.libgdx.graphics.defs.BoneDefinition;
 import de.julianfeja.games.libgdx.graphics.defs.BoneDefinition.Direction;
 import de.julianfeja.games.libgdx.graphics.defs.JointDefinition;
+import de.julianfeja.games.libgdx.graphics.physical.PhysicsObject;
 import de.julianfeja.games.libgdx.graphics.physical.PhysicsObjectGroup;
 import de.julianfeja.games.libgdx.graphics.texture.BoxBodyTexture;
 
@@ -34,6 +35,9 @@ public class ZipMultitextureInput extends ZipInput {
 	protected Map<String, BodyDefinition> bodyDefs;
 
 	protected Array<JointDefinition> jointDefs;
+
+	protected short groupIndexCollide = 0;
+	protected short groupIndexNonCollide = 0;
 
 	public ZipMultitextureInput(String assetPath) {
 		super(assetPath);
@@ -62,7 +66,24 @@ public class ZipMultitextureInput extends ZipInput {
 		}
 	}
 
-	protected static Map<String, BodyDefinition> parseOutlines(Document document) {
+	protected short createGroupIndex(short index) {
+		if (index > 10) {
+			if (groupIndexCollide == 0) {
+				groupIndexCollide = PhysicsObject.getNextColideGroup();
+			}
+
+			return (short) (index - 10 + groupIndexCollide);
+		} else if (index < -10) {
+			if (groupIndexNonCollide == 0) {
+				groupIndexNonCollide = PhysicsObject.getNextNonColideGroup();
+			}
+
+			return (short) (index + 10 + groupIndexCollide);
+		} else
+			return index;
+	}
+
+	protected Map<String, BodyDefinition> parseOutlines(Document document) {
 		Map<String, BodyDefinition> bodyDefs = new LinkedHashMap<String, BodyDefinition>();
 
 		@SuppressWarnings("unchecked")
@@ -76,6 +97,14 @@ public class ZipMultitextureInput extends ZipInput {
 			if (Float.isNaN(density)) {
 				density = 1.0f;
 			}
+
+			short collideIndex = bodyNode.numberValueOf("@collideGroup")
+					.shortValue();
+
+			boolean staticBody = bodyNode.numberValueOf("@staticBody")
+					.intValue() != 0;
+			boolean fixedRotation = bodyNode.numberValueOf("@fixedRotation")
+					.intValue() != 0;
 
 			Array<Vector2> outline = new Array<Vector2>();
 
@@ -100,7 +129,8 @@ public class ZipMultitextureInput extends ZipInput {
 			}
 
 			bodyDefs.put(id, new BodyDefinition(id, outline, density,
-					boneDefinition));
+					boneDefinition, createGroupIndex(collideIndex))
+					.setFixedRotation(fixedRotation).setStaticBody(staticBody));
 		}
 
 		return bodyDefs;

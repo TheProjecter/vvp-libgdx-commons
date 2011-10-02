@@ -18,8 +18,6 @@ public class PhysicsObjectGroup extends PhysicsObject {
 	protected Map<String, Joint> joints = new LinkedHashMap<String, Joint>();
 	protected Map<String, PhysicsObject> physicsObjects = new LinkedHashMap<String, PhysicsObject>();
 
-	protected short groupIndex = PhysicsObject.getNextNonColideGroup();
-
 	protected TextureObject textureObject;
 
 	public PhysicsObjectGroup(Vector2 position, Vector2 scale,
@@ -107,10 +105,10 @@ public class PhysicsObjectGroup extends PhysicsObject {
 							bodyDef.getOutline()), world);
 		} else {
 			physicsObject = new TexturedMeshPhysicsObject(pos, this.scale,
-					new SimpleOutlinedTextureObject(textureObject, bodyDef
-							.getOutline()).setDensity(bodyDef.getDensity())
-							.setGroupIndex(groupIndex),
-					world);
+					new SimpleOutlinedTextureObject(textureObject,
+							bodyDef.getOutline()).setDensity(
+							bodyDef.getDensity()).setGroupIndex(
+							bodyDef.getCollideGroup()), world);
 
 		}
 		physicsObjects.put(key, physicsObject);

@@ -24,6 +24,9 @@ public class SpritePhysicsObject extends PhysicsObject {
 		this.textureObject = textureObject;
 
 		body = createBody();
+
+		body.setFixedRotation(textureObject.getFixedRotation());
+
 	}
 
 	public SpritePhysicsObject(Vector2 position, float scale,
