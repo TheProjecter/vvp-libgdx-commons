@@ -47,13 +47,6 @@ public class OrthoCamera extends OrthographicCamera {
 		} else {
 			lastValidPosition.x = position.x;
 		}
-
-		// if (position.y - viewportHeight * zoom / 2 < borders.y || position.y
-		// + viewportWidth * zoom / 2 > borders.y + borders.height) {
-		// position.y = lastValidPosition.y;
-		// } else {
-		// lastValidPosition.y = position.y;
-		// }
 	}
 
 	public boolean zoomAndMove(int amount) {
@@ -62,44 +55,6 @@ public class OrthoCamera extends OrthographicCamera {
 		if (newZoom < 1f) {
 			return false;
 		}
-
-		// if (amount > 0) {
-		// if (position.x - viewportWidth * newZoom / 2 < borders.x) {
-		// if (viewportWidth * newZoom < borders.width) {
-		// position.x = borders.x + viewportWidth * newZoom / 2;
-		// } else {
-		// return false;
-		// }
-		// }
-		//
-		// if (position.x + viewportWidth * newZoom / 2 > borders.x +
-		// borders.width) {
-		// if (viewportWidth * newZoom < borders.width) {
-		// position.x = borders.x + borders.width - viewportWidth * newZoom / 2;
-		// } else {
-		// return false;
-		// }
-		// }
-		//
-		// if (position.y - viewportHeight * newZoom / 2 < borders.y) {
-		// if (viewportHeight * newZoom < borders.height) {
-		// position.y = borders.y + viewportHeight * newZoom / 2;
-		// } else {
-		// return false;
-		// }
-		// }
-		//
-		// if (position.y + viewportHeight * newZoom / 2 > borders.y +
-		// borders.height) {
-		// if (viewportHeight * newZoom < borders.height) {
-		// position.y = borders.y + borders.height - viewportHeight * newZoom /
-		// 2;
-		// } else {
-		// return false;
-		// }
-		// }
-		//
-		// }
 
 		zoom = newZoom;
 

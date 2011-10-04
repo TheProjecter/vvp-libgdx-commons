@@ -8,8 +8,8 @@ import de.julianfeja.games.libgdx.graphics.Rectangle;
 
 public class BoxBodyTexture extends TextureObject {
 
-	public BoxBodyTexture(Pixmap pixmap, Rectangle rect) {
-		super(pixmap, rect);
+	public BoxBodyTexture(Pixmap pixmap, Rectangle rect, String assetPath) {
+		super(pixmap, rect, assetPath);
 
 		Array<Vector2> outline = new Array<Vector2>();
 
@@ -25,7 +25,9 @@ public class BoxBodyTexture extends TextureObject {
 		init(outline);
 	}
 
-	public BoxBodyTexture(Pixmap pixmap) {
-		this(pixmap, new Rectangle(0, 0, pixmap.getWidth(), pixmap.getHeight()));
+	public BoxBodyTexture(Pixmap pixmap, String assetPath) {
+		this(pixmap,
+				new Rectangle(0, 0, pixmap.getWidth(), pixmap.getHeight()),
+				assetPath);
 	}
 }

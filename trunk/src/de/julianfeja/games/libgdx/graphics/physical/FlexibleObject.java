@@ -37,12 +37,6 @@ public class FlexibleObject extends PhysicsObjectGroup {
 		revoluteJointDef.maxMotorTorque = 20f;
 		revoluteJointDef.collideConnected = false;
 
-		// PrismaticJointDef prismaticJointDef = new PrismaticJointDef();
-		// prismaticJointDef.enableLimit = true;
-		// prismaticJointDef.upperTranslation = 0f;
-		// prismaticJointDef.lowerTranslation = 0f;
-		//
-
 		DistanceJointDef distanceJointDef = new DistanceJointDef();
 
 		for (int i = 1; i < points.size - 1; i++) {
@@ -63,29 +57,17 @@ public class FlexibleObject extends PhysicsObjectGroup {
 		Map<String, BodyDefinition> ret = new LinkedHashMap<String, BodyDefinition>();
 
 		BoneDefinition boneDef = bodyDefinition.getBoneDefinition();
-
 		Array<Array<Vector2>> cutLines = createCutLines(boneDef, textureObject);
 
-		TextureObject t1 = textureObject;
+		Array<TextureObject> elements = textureObject.cut(cutLines);
 
-		int i = 0;
-		for (Array<Vector2> cutLine : cutLines) {
-			// t1.normalize(bodyDefinition.getBoneDefinition().getDirection());
-			Array<TextureObject> ts = t1.cut(cutLine.get(0), cutLine.get(1));
-
+		for (int i = 0; i < elements.size; i++) {
 			ret.put(bodyDefinition.getId() + "#" + i,
-					new BodyDefinition(bodyDefinition.getId(), ts.get(0)
+					new BodyDefinition(bodyDefinition.getId(), elements.get(i)
 							.getOutline(), bodyDefinition.getDensity(), null,
-							bodyDefinition.getCollideGroup()));
-
-			t1 = ts.get(1);
-			i++;
+							bodyDefinition.getCollideGroup())
+							.setFixedRotation(bodyDefinition.getFixedRotation()));
 		}
-
-		ret.put(bodyDefinition.getId() + "#" + i,
-				new BodyDefinition(bodyDefinition.getId(), t1.getOutline(),
-						bodyDefinition.getDensity(), null, bodyDefinition
-								.getCollideGroup()));
 
 		return ret;
 	}

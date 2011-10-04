@@ -11,14 +11,16 @@ import de.julianfeja.games.libgdx.graphics.Rectangle;
 
 public class ParsedBodyTexture extends TextureObject {
 
-	public ParsedBodyTexture(Pixmap pixmap, Rectangle rect) {
-		super(pixmap, rect);
+	public ParsedBodyTexture(Pixmap pixmap, Rectangle rect, String assetPath) {
+		super(pixmap, rect, assetPath);
 
 		init(createOutline(pixmap, rect));
 	}
 
-	public ParsedBodyTexture(Pixmap pixmap) {
-		this(pixmap, new Rectangle(0, 0, pixmap.getWidth(), pixmap.getHeight()));
+	public ParsedBodyTexture(Pixmap pixmap, String assetPath) {
+		this(pixmap,
+				new Rectangle(0, 0, pixmap.getWidth(), pixmap.getHeight()),
+				assetPath);
 	}
 
 	protected Array<Vector2> createOutline(Pixmap pixmap, Rectangle rect) {

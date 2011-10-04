@@ -6,6 +6,7 @@ import java.util.Map;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 
@@ -15,6 +16,7 @@ public class TextureManager {
 	private static TextureManager textureManager = null;
 
 	protected Map<String, Texture> textures;
+	protected Map<String, TextureAtlas> atlases;
 
 	public enum FileType {
 		Image, SubImage, Multitexture
@@ -87,11 +89,12 @@ public class TextureManager {
 		}
 
 		if (texturePath.bodyPolicy == BodyPolicy.Box) {
-			ret = new BoxBodyTexture(pixmap);
+			ret = new BoxBodyTexture(pixmap, texturePath.path);
 		} else if (texturePath.bodyPolicy == BodyPolicy.Parse) {
-			ret = new ParsedBodyTexture(pixmap);
+			ret = new ParsedBodyTexture(pixmap, texturePath.path);
 		} else if (texturePath.bodyPolicy == BodyPolicy.Predefined) {
-			ret = new SimpleOutlinedTextureObject(pixmap, outline);
+			ret = new SimpleOutlinedTextureObject(pixmap, outline,
+					texturePath.path);
 		}
 
 		pixmap.dispose();
@@ -109,6 +112,14 @@ public class TextureManager {
 		TexturePath texturePath = analysePath(assetPath);
 
 		texturePath.bodyPolicy = BodyPolicy.Parse;
+
+		return createTextureObject(assetPath, texturePath);
+	}
+
+	public TextureObject createBoxBodyTexture(String assetPath) {
+		TexturePath texturePath = analysePath(assetPath);
+
+		texturePath.bodyPolicy = BodyPolicy.Box;
 
 		return createTextureObject(assetPath, texturePath);
 	}

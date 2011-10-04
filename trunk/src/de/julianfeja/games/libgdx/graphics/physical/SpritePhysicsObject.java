@@ -1,5 +1,6 @@
 package de.julianfeja.games.libgdx.graphics.physical;
 
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
@@ -74,8 +75,13 @@ public class SpritePhysicsObject extends PhysicsObject {
 	}
 
 	@Override
-	public void paint(SpriteBatch batch) {
-		super.paint(batch);
+	public void paint(Camera camera, SpriteBatch batch) {
+
+		if (camera != null) {
+			batch.getProjectionMatrix().set(camera.combined);
+			batch.begin();
+		}
+
 		float angle = MathUtils.radiansToDegrees * body.getAngle();
 
 		Rectangle rect = textureObject.getRect();
@@ -89,6 +95,9 @@ public class SpritePhysicsObject extends PhysicsObject {
 				position.y + rectPos.y, -rectPos.x, -rectPos.y,
 				pixmapDimension.x, pixmapDimension.y, 1f, 1f, angle);
 
+		if (camera != null) {
+			batch.end();
+		}
 	}
 
 	@Override

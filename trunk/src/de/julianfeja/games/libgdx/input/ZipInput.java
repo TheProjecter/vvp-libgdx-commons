@@ -14,8 +14,10 @@ import com.badlogic.gdx.Gdx;
 
 public class ZipInput {
 	protected Map<String, byte[]> content = new LinkedHashMap<String, byte[]>();
+	protected String assetPath;
 
 	public ZipInput(String assetPath) {
+		this.assetPath = assetPath;
 		ZipInputStream zis = new ZipInputStream(new BufferedInputStream(
 				Gdx.files.internal(assetPath).read()));
 		try {
