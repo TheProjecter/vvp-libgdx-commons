@@ -9,16 +9,17 @@ import de.julianfeja.games.libgdx.graphics.Rectangle;
 public class SimpleOutlinedTextureObject extends TextureObject {
 
 	public SimpleOutlinedTextureObject(Pixmap pixmap, Rectangle rect,
-			Array<Vector2> outline) {
-		super(pixmap, rect);
+			Array<Vector2> outline, String assetPath) {
+		super(pixmap, rect, assetPath);
 
 		init(outline);
 	}
 
-	public SimpleOutlinedTextureObject(Pixmap pixmap, Array<Vector2> outline) {
+	public SimpleOutlinedTextureObject(Pixmap pixmap, Array<Vector2> outline,
+			String assetPath) {
 		this(pixmap,
 				new Rectangle(0, 0, pixmap.getWidth(), pixmap.getHeight()),
-				outline);
+				outline, assetPath);
 	}
 
 	public SimpleOutlinedTextureObject(TextureObject other,

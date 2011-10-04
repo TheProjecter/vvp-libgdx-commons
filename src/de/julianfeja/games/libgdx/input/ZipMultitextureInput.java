@@ -210,6 +210,8 @@ public class ZipMultitextureInput extends ZipInput {
 					if (motors.size() > 0) {
 						Node motorNode = (Node) motors.get(0);
 
+						rjd.enableMotor = true;
+
 						rjd.motorSpeed = motorNode.numberValueOf("@motorSpeed")
 								.floatValue();
 						rjd.maxMotorTorque = motorNode.numberValueOf(
@@ -275,7 +277,7 @@ public class ZipMultitextureInput extends ZipInput {
 		}
 
 		return new PhysicsObjectGroup(position, scale, bodys, joints,
-				new BoxBodyTexture(pixmap), world);
+				new BoxBodyTexture(pixmap, assetPath), world);
 	}
 
 	public PhysicsObjectGroup createGroup(int index, Vector2 position,

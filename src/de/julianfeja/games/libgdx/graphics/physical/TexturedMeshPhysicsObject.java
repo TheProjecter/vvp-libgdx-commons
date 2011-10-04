@@ -1,6 +1,7 @@
 package de.julianfeja.games.libgdx.graphics.physical;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.Mesh;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -46,8 +47,10 @@ public class TexturedMeshPhysicsObject extends SpritePhysicsObject {
 	}
 
 	@Override
-	public void paint(SpriteBatch batch) {
+	public void paint(Camera camera, SpriteBatch batch) {
 		update();
+
+		camera.apply(Gdx.graphics.getGL10());
 
 		GL10 gl = Gdx.graphics.getGL10();
 		gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());

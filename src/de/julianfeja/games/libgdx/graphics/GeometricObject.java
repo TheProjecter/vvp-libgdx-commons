@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Vector2;
 public abstract class GeometricObject implements Paintable {
 	protected Vector2 position;
 	protected Vector2 scale;
+	protected float angle = 0;
 
 	/*
 	 * pixels per meter
@@ -17,7 +18,6 @@ public abstract class GeometricObject implements Paintable {
 
 	}
 
-	@Override
 	public Vector2 getScale() {
 		return scale;
 	}

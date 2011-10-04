@@ -31,7 +31,9 @@ public abstract class TextureObject {
 	protected boolean staticBody = false;
 	protected boolean fixedRotation = false;
 
-	public TextureObject(Pixmap pixmap, Rectangle rect) {
+	public TextureObject(Pixmap pixmap, Rectangle rect, String assetPath) {
+		this.assetPath = assetPath;
+
 		texture = TextureManager.instance().createTexture(assetPath, pixmap);
 
 		dimension = new Vector2(pixmap.getWidth() / GeometricObject.PPM,
@@ -44,6 +46,8 @@ public abstract class TextureObject {
 		texture = other.getTexture();
 		this.dimension = other.getDimension();
 		this.density = other.getDensity();
+		this.groupIndex = other.groupIndex;
+		this.fixedRotation = other.fixedRotation;
 
 		this.rect = other.getRect();
 
@@ -370,43 +374,38 @@ public abstract class TextureObject {
 		return ret;
 	}
 
-	public Array<TextureObject> cut(Array<Array<Vector2>> cutLines, int index,
-			byte lastCutIndex) {
+	public Array<TextureObject> cut(Array<Array<Vector2>> cutLines, int index) {
 		Array<TextureObject> ret;
-		if (index == cutLines.size) {
+		Array<Vector2> cutLine = cutLines.get(index);
+		Array<TextureObject> cuts = cut(cutLine.get(0), cutLine.get(1));
+
+		if (cuts == null) {
+			return null;
+		}
+
+		if (index == cutLines.size - 1) {
 			ret = new Array<TextureObject>();
-			ret.add(this);
+
+			ret.add(cuts.get(0));
+			ret.add(cuts.get(1));
 		} else {
-			Array<Vector2> cutLine = cutLines.get(index);
-			Array<TextureObject> cuts = cut(cutLine.get(0), cutLine.get(1));
-
-			if (cuts == null) {
-				return null;
-			}
-
-			if (index == cutLines.size - 1) {
-				ret = new Array<TextureObject>();
-
-				ret.add(cuts.get(lastCutIndex));
-				ret.add(cuts.get(lastCutIndex));
-			}
-
-			ret = cuts.get(0).cut(cutLines, index + 1, 0);
+			ret = cuts.get(1).cut(cutLines, index + 1);
 
 			if (ret == null) {
-				ret = cuts.get(1).cut(cutLines, index + 1, 1);
+				ret = cuts.get(0).cut(cutLines, index + 1);
 
-				ret.add(cuts.get(0));
+				ret.insert(0, cuts.get(1));
 			} else {
-				ret.add(cuts.get(1));
+				ret.insert(0, cuts.get(0));
 			}
+
 		}
 
 		return ret;
 	}
 
 	public Array<TextureObject> cut(Array<Array<Vector2>> cutLines) {
-		return cut(cutLines, 0, 0);
+		return cut(cutLines, 0);
 	}
 
 	public void normalize(Direction direction) {

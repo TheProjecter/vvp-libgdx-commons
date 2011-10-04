@@ -3,6 +3,7 @@ package de.julianfeja.games.libgdx.graphics.physical;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Joint;
@@ -27,7 +28,6 @@ public class PhysicsObjectGroup extends PhysicsObject {
 		super(position, scale, new Vector2(), world);
 
 		this.textureObject = textureObject;
-		this.world = world;
 
 		for (JointDefinition jointDef : jointDefs) {
 			addJoint(jointDef, bodyDefs);
@@ -35,6 +35,16 @@ public class PhysicsObjectGroup extends PhysicsObject {
 
 		body = physicsObjects.get(physicsObjects.keySet().iterator().next())
 				.getBody();
+	}
+
+	public PhysicsObjectGroup(PhysicsObjectGroup other) {
+		super(other.getPosition(), other.getScale(), other.dimension,
+				other.world);
+
+		this.textureObject = other.textureObject;
+		this.joints = other.joints;
+		this.body = other.body;
+		this.physicsObjects = other.physicsObjects;
 	}
 
 	protected void addJoint(JointDefinition jointDef,
@@ -105,10 +115,11 @@ public class PhysicsObjectGroup extends PhysicsObject {
 							bodyDef.getOutline()), world);
 		} else {
 			physicsObject = new TexturedMeshPhysicsObject(pos, this.scale,
-					new SimpleOutlinedTextureObject(textureObject,
-							bodyDef.getOutline()).setDensity(
-							bodyDef.getDensity()).setGroupIndex(
-							bodyDef.getCollideGroup()), world);
+					new SimpleOutlinedTextureObject(textureObject, bodyDef
+							.getOutline()).setDensity(bodyDef.getDensity())
+							.setGroupIndex(bodyDef.getCollideGroup())
+							.setFixedRotation(bodyDef.getFixedRotation()),
+					world);
 
 		}
 		physicsObjects.put(key, physicsObject);
@@ -117,9 +128,9 @@ public class PhysicsObjectGroup extends PhysicsObject {
 	}
 
 	@Override
-	public void paint(SpriteBatch batch) {
+	public void paint(Camera camera, SpriteBatch batch) {
 		for (String key : physicsObjects.keySet()) {
-			physicsObjects.get(key).paint(batch);
+			physicsObjects.get(key).paint(camera, batch);
 		}
 	}
 
