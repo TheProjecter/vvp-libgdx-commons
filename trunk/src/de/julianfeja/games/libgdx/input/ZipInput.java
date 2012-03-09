@@ -11,6 +11,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.scenes.scene2d.ui.utils.AndroidClipboard;
 
 public class ZipInput {
 	protected Map<String, byte[]> content = new LinkedHashMap<String, byte[]>();
@@ -18,8 +19,9 @@ public class ZipInput {
 
 	public ZipInput(String assetPath) {
 		this.assetPath = assetPath;
-		ZipInputStream zis = new ZipInputStream(new BufferedInputStream(
-				Gdx.files.internal(assetPath).read()));
+		BufferedInputStream bis = new BufferedInputStream(Gdx.files.internal(
+				assetPath).read());
+		ZipInputStream zis = new ZipInputStream(bis);
 		try {
 			ZipEntry ze;
 			while ((ze = zis.getNextEntry()) != null) {
@@ -31,12 +33,15 @@ public class ZipInput {
 				}
 
 				content.put(ze.getName(), baos.toByteArray());
+
+				baos.close();
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
 		try {
+			bis.close();
 			zis.close();
 		} catch (IOException e1) {
 			e1.printStackTrace();

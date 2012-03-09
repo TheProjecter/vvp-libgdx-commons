@@ -114,6 +114,7 @@ public class JointDefinition {
 			RevoluteJointDef revDef = (RevoluteJointDef) jointDef;
 
 			revDef.initialize(bodyA, bodyB, center);
+
 			break;
 
 		case DistanceJoint:

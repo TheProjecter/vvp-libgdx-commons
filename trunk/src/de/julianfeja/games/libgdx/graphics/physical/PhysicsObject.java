@@ -77,6 +77,7 @@ abstract public class PhysicsObject extends GeometricObject implements Physical 
 		boxBodyDef.type = BodyType.DynamicBody;
 		boxBodyDef.position.x = position.x;
 		boxBodyDef.position.y = position.y;
+		boxBodyDef.angularDamping = 2f;
 		Body body = world.createBody(boxBodyDef);
 
 		createFixtures(body);

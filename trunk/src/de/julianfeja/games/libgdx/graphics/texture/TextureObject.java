@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.Mesh;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.VertexAttribute;
 import com.badlogic.gdx.graphics.VertexAttributes.Usage;
 import com.badlogic.gdx.math.Vector2;
@@ -35,6 +36,8 @@ public abstract class TextureObject {
 		this.assetPath = assetPath;
 
 		texture = TextureManager.instance().createTexture(assetPath, pixmap);
+
+		texture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 
 		dimension = new Vector2(pixmap.getWidth() / GeometricObject.PPM,
 				pixmap.getHeight() / GeometricObject.PPM);
