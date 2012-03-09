@@ -16,7 +16,7 @@ import de.julianfeja.games.libgdx.graphics.texture.SimpleOutlinedTextureObject;
 import de.julianfeja.games.libgdx.graphics.texture.TextureObject;
 
 public class PhysicsObjectGroup extends PhysicsObject {
-	protected Map<String, Joint> joints = new LinkedHashMap<String, Joint>();
+	protected Array<Joint> joints = new Array<Joint>();
 	protected Map<String, PhysicsObject> physicsObjects = new LinkedHashMap<String, PhysicsObject>();
 
 	protected TextureObject textureObject;
@@ -101,7 +101,9 @@ public class PhysicsObjectGroup extends PhysicsObject {
 
 		jointDef.getJointDef().collideConnected = false;
 
-		world.createJoint(jointDef.getJointDef());
+		Joint joint = world.createJoint(jointDef.getJointDef());
+
+		joints.add(joint);
 	}
 
 	protected PhysicsObject addBody(String key, BodyDefinition bodyDef,
